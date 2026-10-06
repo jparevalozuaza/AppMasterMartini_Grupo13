@@ -27,22 +27,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cl.duoc.mastermartini.R
 @OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun HomeScreenExpandida() {
     var nombre by remember { mutableStateOf("") }
-    Scaffold(topBar = { TopAppBar(title = { Text("Mi App Kotlin") }) }) { innerPadding ->
-        Row(modifier = Modifier.padding(innerPadding).fillMaxSize().padding(24.dp)) {
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text(
-                    if (nombre.isBlank()) "¡Bienvenido!" else "¡Bienvenido, $nombre!",
-                    style = MaterialTheme.typography.headlineMedium
-                )
-                OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre") })
-                Button(onClick = {}) { Text("Presiona") }
-            }
-            Spacer(modifier = Modifier.width(24.dp))
-            Image(painter = painterResource(id = R.drawable.logo), contentDescription = "logo", modifier = Modifier.weight(1f).fillMaxHeight())
+    Row(modifier = Modifier.fillMaxSize().padding(24.dp)) {
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Text(
+                if (nombre.isBlank()) "¡Bienvenido!" else "¡Bienvenido, $nombre!",
+                style = MaterialTheme.typography.headlineMedium
+            )
+            OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre") })
+            Button(onClick = {}) { Text("Presiona") }
         }
+        Spacer(modifier = Modifier.width(24.dp))
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "logo",
+            modifier = Modifier.weight(1f).fillMaxHeight()
+        )
     }
 }
 

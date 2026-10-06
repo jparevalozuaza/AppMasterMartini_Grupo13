@@ -25,25 +25,25 @@ import androidx.compose.ui.unit.dp
 import cl.duoc.mastermartini.R
 
 @OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
-fun HomeScreenCompacta(){
+fun HomeScreenCompacta() {
     var nombre by remember { mutableStateOf("") }
-    Scaffold(
-        topBar = { TopAppBar(title = { Text("Mi App Kotlin") }) }
-    ){
-            innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            Text(if (nombre.isBlank())"Bienvenido" else "¡Bienvenido: $nombre!")
-            OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = {Text("Nombre: ")})
-            Image(painter = painterResource(id = R.drawable.logo), contentDescription = "logo", modifier = Modifier.fillMaxWidth().height(150.dp))
-        }
+    // Ya no hay Scaffold: la barra superior la pone HomeScreen
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
+        Text(if (nombre.isBlank()) "Bienvenido" else "¡Bienvenido: $nombre!")
+        OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre: ") })
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "logo",
+            modifier = Modifier.fillMaxWidth().height(150.dp)
+        )
     }
 }
 

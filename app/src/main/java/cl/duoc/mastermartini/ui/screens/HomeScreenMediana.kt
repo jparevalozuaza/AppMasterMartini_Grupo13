@@ -25,21 +25,24 @@ import androidx.compose.ui.unit.dp
 import cl.duoc.mastermartini.R
 
 @OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun HomeScreenMediana() {
     var nombre by remember { mutableStateOf("") }
-    Scaffold(topBar = { TopAppBar(title = { Text("Mi App Kotlin") }) }) { innerPadding ->
-        Row(
-            modifier = Modifier.padding(innerPadding).fillMaxSize().padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(if (nombre.isBlank()) "¡Bienvenido!" else "¡Bienvenido, $nombre!")
-                OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre") })
-            }
-            Image(painter = painterResource(id = R.drawable.logo), contentDescription = "logo", modifier = Modifier.weight(1f).height(150.dp))
+    Row(
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(if (nombre.isBlank()) "¡Bienvenido!" else "¡Bienvenido, $nombre!")
+            OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre") })
         }
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "logo",
+            modifier = Modifier.weight(1f).height(150.dp)
+        )
     }
 }
 
