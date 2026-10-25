@@ -29,7 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-
+import cl.duoc.mastermartini.repository.ContenidoRepository
 
 @Composable
 fun CatalogoScreen(viewModel: MainViewModel) {
@@ -51,32 +51,8 @@ fun CatalogoScreen(viewModel: MainViewModel) {
         mutableStateOf<String?>(null)
     }
 
-    val contenidos = when (categoriaSeleccionada) {
-        "Chocolatería" -> listOf(
-            "Introducción a la chocolatería",
-            "Técnicas de templado",
-            "Elaboración de bombones"
-        )
-
-        "Pastelería" -> listOf(
-            "Pastelería de vitrina",
-            "Preparación de cremas",
-            "Decoración de tortas"
-        )
-
-        "Panadería" -> listOf(
-            "Técnicas de panadería",
-            "Preparación de masas",
-            "Fermentación de masas"
-        )
-
-        "Heladería" -> listOf(
-            "Introducción a la heladería",
-            "Elaboración de helados",
-            "Texturas y sabores"
-        )
-
-        else -> emptyList()
+    val contenidos = ContenidoRepository.contenidos.filter { contenido ->
+        contenido.categoria == categoriaSeleccionada
     }
 
     Scaffold(
@@ -162,17 +138,16 @@ fun CatalogoScreen(viewModel: MainViewModel) {
                     ) {
                         Column(
                             modifier = Modifier.padding(16.dp),
-                            verticalArrangement =
-                                Arrangement.spacedBy(6.dp)
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             Text(
-                                text = contenido,
+                                text = contenido.titulo,
                                 style = MaterialTheme.typography.titleMedium
                             )
 
                             Text(
-                                text = "Descubre técnicas y conocimientos " +
-                                        "para desarrollar tus habilidades."
+                                text = contenido.descripcion,
+                                style = MaterialTheme.typography.bodyMedium
                             )
                         }
                     }

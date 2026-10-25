@@ -20,22 +20,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
-
+import cl.duoc.mastermartini.repository.ContenidoRepository
 
 @Composable
 fun HomeScreenCompacta() {
 
     var busqueda by remember { mutableStateOf("") }
 
-    val contenidos = listOf(
-        "Recetas de chocolatería",
-        "Pastelería de vitrina",
-        "Técnicas de panadería",
-        "Introducción a la heladería"
-    )
+    val contenidos = ContenidoRepository.contenidos
 
-    val contenidosFiltrados = contenidos.filter {
-        it.contains(busqueda, ignoreCase = true)
+    val contenidosFiltrados = contenidos.filter { contenido ->
+        contenido.titulo.contains(busqueda, ignoreCase = true) ||
+                contenido.categoria.contains(busqueda, ignoreCase = true)
     }
 
     LazyColumn(
@@ -97,29 +93,28 @@ fun HomeScreenCompacta() {
             )
         }
 
-        if (contenidosFiltrados.isEmpty()) {
-            item {
-                Text("No se encontraron contenidos.")
-            }
-        } else {
-            items(contenidosFiltrados) { contenido ->
-                Card(
-                    modifier = Modifier.fillMaxWidth()
+        items(contenidosFiltrados) { contenido ->
+            Card(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Text(
-                            text = contenido,
-                            style = MaterialTheme.typography.titleMedium
-                        )
+                    Text(
+                        text = contenido.titulo,
+                        style = MaterialTheme.typography.titleMedium
+                    )
 
-                        Text(
-                            text = "Descubre técnicas y conocimientos " +
-                                    "para desarrollar tus habilidades."
-                        )
-                    }
+                    Text(
+                        text = contenido.categoria,
+                        style = MaterialTheme.typography.labelMedium
+                    )
+
+                    Text(
+                        text = contenido.descripcion,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
         }
