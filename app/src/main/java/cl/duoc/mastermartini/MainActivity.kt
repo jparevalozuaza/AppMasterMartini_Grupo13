@@ -24,6 +24,7 @@ import cl.duoc.mastermartini.repository.ContenidoRepository
 import cl.duoc.mastermartini.ui.screens.DetalleScreen
 import cl.duoc.mastermartini.ui.screens.AprenderScreen
 import cl.duoc.mastermartini.ui.screens.FavoritosScreen
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
