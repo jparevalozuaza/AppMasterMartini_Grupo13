@@ -18,6 +18,10 @@ import cl.duoc.mastermartini.ui.screens.HomeScreen
 import cl.duoc.mastermartini.ui.screens.PerfilScreen
 import cl.duoc.mastermartini.ui.theme.AppMasterMartini_Grupo13Theme
 import cl.duoc.mastermartini.viewmodel.MainViewModel
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import cl.duoc.mastermartini.repository.ContenidoRepository
+import cl.duoc.mastermartini.ui.screens.DetalleScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +50,9 @@ class MainActivity : ComponentActivity() {
                             }
                             is NavigationEvent.PopBackStack -> navController.popBackStack()
                             is NavigationEvent.NavigateUp -> navController.navigateUp()
+                            is NavigationEvent.NavigateToRoute -> {
+                                navController.navigate(event.route)
+                            }
                         }
                     }
                 }
@@ -59,6 +66,27 @@ class MainActivity : ComponentActivity() {
                     composable(Screen.Home.route) { HomeScreen(viewModel = viewModel) }
                     composable(Screen.Catalogo.route) { CatalogoScreen(viewModel = viewModel) }
                     composable(Screen.Perfil.route) { PerfilScreen(viewModel = viewModel) }
+                    composable(
+                        route = Screen.Detalle.route,
+                        arguments = listOf(
+                            navArgument("contenidoId") {
+                                type = NavType.IntType
+                            }
+                        )
+                    ) { backStackEntry ->
+
+                        val contenidoId = backStackEntry.arguments
+                            ?.getInt("contenidoId")
+
+                        val contenido = ContenidoRepository.contenidos.find {
+                            it.id == contenidoId
+                        }
+
+                        DetalleScreen(
+                            contenido = contenido,
+                            viewModel = viewModel
+                        )
+                    }
                 }
             }
         }

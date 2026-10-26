@@ -47,4 +47,12 @@ class MainViewModel : ViewModel() {
     fun navigateUp() {
         viewModelScope.launch { _navigationEvents.emit(NavigationEvent.NavigateUp) }
     }
+
+    fun navigateToRoute(route: String) {
+        viewModelScope.launch {
+            _navigationEvents.emit(
+                NavigationEvent.NavigateToRoute(route)
+            )
+        }
+    }
 }

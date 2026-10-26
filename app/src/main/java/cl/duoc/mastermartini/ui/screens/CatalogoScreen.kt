@@ -30,7 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import cl.duoc.mastermartini.repository.ContenidoRepository
-
+import androidx.compose.foundation.clickable
 @Composable
 fun CatalogoScreen(viewModel: MainViewModel) {
 
@@ -73,6 +73,7 @@ fun CatalogoScreen(viewModel: MainViewModel) {
                                     Screen.Home -> Icons.Filled.Home
                                     Screen.Catalogo -> Icons.Filled.Star
                                     Screen.Perfil -> Icons.Filled.Person
+                                    Screen.Detalle -> Icons.Filled.Star
                                 },
                                 contentDescription = screen.titulo
                             )
@@ -133,8 +134,15 @@ fun CatalogoScreen(viewModel: MainViewModel) {
                 )
 
                 contenidos.forEach { contenido ->
+
                     Card(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                viewModel.navigateToRoute(
+                                    Screen.Detalle.crearRuta(contenido.id)
+                                )
+                            }
                     ) {
                         Column(
                             modifier = Modifier.padding(16.dp),
