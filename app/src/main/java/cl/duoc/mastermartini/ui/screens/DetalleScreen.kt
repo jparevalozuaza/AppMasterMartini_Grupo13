@@ -3,6 +3,7 @@ package cl.duoc.mastermartini.ui.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cl.duoc.mastermartini.model.Contenido
 import cl.duoc.mastermartini.viewmodel.MainViewModel
+import androidx.compose.material3.OutlinedButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,6 +53,23 @@ fun DetalleScreen(
                     text = contenido.descripcion,
                     style = MaterialTheme.typography.bodyLarge
                 )
+
+                val esFavorito = viewModel.favoritos.value.contains(contenido.id)
+
+                OutlinedButton(
+                    onClick = {
+                        viewModel.alternarFavorito(contenido.id)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = if (esFavorito) {
+                            "★ Quitar de favoritos"
+                        } else {
+                            "☆ Agregar a favoritos"
+                        }
+                    )
+                }
             } else {
                 Text("No se encontró el contenido solicitado.")
             }

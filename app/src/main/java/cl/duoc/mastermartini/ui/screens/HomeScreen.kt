@@ -57,6 +57,15 @@ fun HomeScreen(viewModel: MainViewModel) {
                     },
                     modifier = Modifier.padding(horizontal = 12.dp)
                 )
+                NavigationDrawerItem(
+                    label = { Text(Screen.Aprender.titulo) },
+                    selected = false,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        viewModel.navigateTo(Screen.Aprender)
+                    },
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
             }
         }
     ) {

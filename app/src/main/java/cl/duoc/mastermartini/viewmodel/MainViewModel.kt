@@ -8,7 +8,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.State
 // ViewModel = la "ventanilla" que recibe pedidos desde las pantallas.
 // Sobrevive a cambios como girar el celular (las pantallas, en cambio, se redibujan).
 class MainViewModel : ViewModel() {
@@ -19,6 +20,26 @@ class MainViewModel : ViewModel() {
 
     // Versión de solo lectura: MainActivity puede ESCUCHAR, pero no enviar.
     val navigationEvents: SharedFlow<NavigationEvent> = _navigationEvents.asSharedFlow()
+
+    // Lista de identificadores de contenidos favoritos.
+    private val _favoritos = mutableStateOf(setOf<Int>())
+    val favoritos: State<Set<Int>> = _favoritos
+
+    // Comprueba si un contenido está marcado como favorito.
+    fun esFavorito(contenidoId: Int): Boolean {
+        return _favoritos.value.contains(contenidoId)
+    }
+
+    // Marca o desmarca un contenido como favorito.
+    fun alternarFavorito(contenidoId: Int) {
+        val favoritosActuales = _favoritos.value
+
+        _favoritos.value = if (favoritosActuales.contains(contenidoId)) {
+            favoritosActuales - contenidoId
+        } else {
+            favoritosActuales + contenidoId
+        }
+    }
 
     // Ir a una pantalla.
     // popUpToRoute = Home: Inicio siempre queda como "base" del historial,
