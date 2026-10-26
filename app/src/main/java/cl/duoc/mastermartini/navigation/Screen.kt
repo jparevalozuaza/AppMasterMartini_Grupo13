@@ -8,4 +8,12 @@ sealed class Screen(
     data object Home : Screen(route = "home", titulo = "Inicio")
     data object Catalogo : Screen(route = "catalogo", titulo = "Catálogo")
     data object Perfil : Screen(route = "perfil", titulo = "Perfil")
+
+    data object Detalle : Screen(route = "detalle/{contenidoId}", titulo = "Detalle") {
+        fun crearRuta(contenidoId: Int): String {
+            return "detalle/$contenidoId"
+        }
+    }
+
+
 }
