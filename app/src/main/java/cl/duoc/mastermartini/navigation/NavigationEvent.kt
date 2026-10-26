@@ -16,4 +16,8 @@ sealed class NavigationEvent {
 
     // Subir un nivel en la jerarquía de la app (en esta app equivale a PopBackStack)
     data object NavigateUp : NavigationEvent()
+
+    data class NavigateToRoute(
+        val route: String
+    ) : NavigationEvent()
 }
