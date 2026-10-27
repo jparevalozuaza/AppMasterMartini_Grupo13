@@ -95,6 +95,21 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    // Navega a una pantalla eliminando del historial la pantalla indicada.
+    // Se utiliza al iniciar y cerrar sesión.
+    fun navegarLimpiando(destino: Screen, limpiarHasta: Screen) {
+        viewModelScope.launch {
+            _navigationEvents.emit(
+                NavigationEvent.NavigateTo(
+                    route = destino,
+                    popUpToRoute = limpiarHasta,
+                    inclusive = true,
+                    singleTop = true
+                )
+            )
+        }
+    }
+
     // Navega directamente a una ruta.
     fun navigateToRoute(route: String) {
         viewModelScope.launch {
