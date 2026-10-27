@@ -6,19 +6,25 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import cl.duoc.mastermartini.data.dao.RecetaDao
+import cl.duoc.mastermartini.data.dao.UsuarioDao
 import cl.duoc.mastermartini.data.entity.RecetaEntity
+import cl.duoc.mastermartini.data.entity.UsuarioEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+// version = 2 porque se agregó la tabla "usuarios" (Integrante 1).
+// Cada vez que se agregue o cambie una tabla, hay que subir este número.
 @Database(
-    entities = [RecetaEntity::class],
-    version = 1,
+    entities = [RecetaEntity::class, UsuarioEntity::class],
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun recetaDao(): RecetaDao
+
+    abstract fun usuarioDao(): UsuarioDao
 
     companion object {
 
@@ -45,6 +51,9 @@ abstract class AppDatabase : RoomDatabase() {
                             }
                         }
                     })
+                    // MVP académico: si cambia la versión, se recrea la base
+                    // (y el callback vuelve a cargar las recetas iniciales)
+                    .fallbackToDestructiveMigration()
                     .build()
 
                 INSTANCE = instance
