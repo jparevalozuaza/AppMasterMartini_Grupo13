@@ -100,6 +100,8 @@ fun CatalogoScreen(viewModel: MainViewModel) {
                                     Screen.Perfil -> Icons.Filled.Person
                                     Screen.Detalle -> Icons.Filled.Star
                                     Screen.Favoritos -> Icons.Filled.Star
+                                    Screen.Recetas -> Icons.Filled.Star
+                                    Screen.DetalleReceta -> Icons.Filled.Star
                                 },
                                 contentDescription = screen.titulo
                             )

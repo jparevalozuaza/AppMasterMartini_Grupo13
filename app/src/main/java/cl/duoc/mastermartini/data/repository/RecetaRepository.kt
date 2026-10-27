@@ -16,6 +16,9 @@ class RecetaRepository(
         return recetaDao.obtenerPorId(id)
     }
 
+    suspend fun contarPorTitulo(titulo: String): Int =
+        recetaDao.contarPorTitulo(titulo)
+
     suspend fun insertar(receta: RecetaEntity) {
         recetaDao.insertar(receta)
     }

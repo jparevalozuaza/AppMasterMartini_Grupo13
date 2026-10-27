@@ -16,8 +16,14 @@ interface RecetaDao {
     @Query("SELECT * FROM recetas WHERE id = :id")
     suspend fun obtenerPorId(id: Int): RecetaEntity?
 
+    @Query("SELECT COUNT(*) FROM recetas WHERE titulo = :titulo")
+    suspend fun contarPorTitulo(titulo: String): Int
+
     @Insert
     suspend fun insertar(receta: RecetaEntity)
+
+    @Insert
+    suspend fun insertarTodas(recetas: List<RecetaEntity>)
 
     @Delete
     suspend fun eliminar(receta: RecetaEntity)
