@@ -15,6 +15,9 @@ import cl.duoc.mastermartini.navigation.NavigationEvent
 import cl.duoc.mastermartini.navigation.Screen
 import cl.duoc.mastermartini.ui.screens.CatalogoScreen
 import cl.duoc.mastermartini.ui.screens.HomeScreen
+import cl.duoc.mastermartini.ui.screens.LoginScreen
+import cl.duoc.mastermartini.ui.screens.RegistroScreen
+import cl.duoc.mastermartini.viewmodel.AuthViewModel
 import cl.duoc.mastermartini.ui.screens.PerfilScreen
 import cl.duoc.mastermartini.ui.theme.AppMasterMartini_Grupo13Theme
 import cl.duoc.mastermartini.viewmodel.MainViewModel
@@ -35,8 +38,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppMasterMartini_Grupo13Theme {
 
-                // UN SOLO ViewModel para toda la app, creado aquí y compartido con todas las pantallas
-                val viewModel: MainViewModel = viewModel()
+                // ViewModels compartidos, creados una sola vez para toda la app
+                val viewModel: MainViewModel = viewModel()          // navegación
+                val authViewModel: AuthViewModel = viewModel()      // Login y Registro
                 // NavController = el "conductor" que cambia de pantalla y lleva el historial
                 val navController = rememberNavController()
 
@@ -65,9 +69,17 @@ class MainActivity : ComponentActivity() {
                 // NAVHOST = el "escenario": muestra la pantalla que corresponde a la ruta actual
                 NavHost(
                     navController = navController,
-                    startDestination = Screen.Home.route,  // pantalla inicial
+                    startDestination = Screen.Login.route,  // la app ahora inicia en Login
                     modifier = Modifier.fillMaxSize()
                 ) {
+                    // Pantallas de acceso (Integrante 1)
+                    composable(Screen.Login.route) {
+                        LoginScreen(authViewModel = authViewModel, mainViewModel = viewModel)
+                    }
+                    composable(Screen.Registro.route) {
+                        RegistroScreen(authViewModel = authViewModel, mainViewModel = viewModel)
+                    }
+
                     composable(Screen.Home.route) { HomeScreen(viewModel = viewModel) }
                     composable(Screen.Catalogo.route) { CatalogoScreen(viewModel = viewModel) }
                     composable(Screen.Perfil.route) { PerfilScreen(viewModel = viewModel) }
