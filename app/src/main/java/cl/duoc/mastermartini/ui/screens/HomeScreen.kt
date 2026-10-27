@@ -66,6 +66,18 @@ fun HomeScreen(viewModel: MainViewModel) {
                     },
                     modifier = Modifier.padding(horizontal = 12.dp)
                 )
+
+                NavigationDrawerItem(
+                    label = { Text(Screen.Recetas.titulo) },
+                    selected = false,
+                    onClick = {
+                        scope.launch {
+                            drawerState.close()
+                        }
+                        viewModel.navigateToRoute(Screen.Recetas.route)
+                    },
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
             }
         }
     ) {

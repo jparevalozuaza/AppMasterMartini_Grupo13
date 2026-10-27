@@ -24,6 +24,9 @@ import cl.duoc.mastermartini.repository.ContenidoRepository
 import cl.duoc.mastermartini.ui.screens.DetalleScreen
 import cl.duoc.mastermartini.ui.screens.AprenderScreen
 import cl.duoc.mastermartini.ui.screens.FavoritosScreen
+import cl.duoc.mastermartini.ui.screens.RecetasScreen
+import cl.duoc.mastermartini.viewmodel.RecetaViewModel
+import cl.duoc.mastermartini.ui.screens.DetalleRecetaScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,6 +94,35 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(Screen.Aprender.route) { AprenderScreen(viewModel = viewModel) }
                     composable(Screen.Favoritos.route) { FavoritosScreen(viewModel = viewModel) }
+                    composable(Screen.Recetas.route) {
+                        val recetaViewModel: RecetaViewModel = viewModel()
+
+                        RecetasScreen(
+                            viewModel = recetaViewModel,
+                            navController = navController
+                        )
+                    }
+
+                    composable(
+                        route = Screen.DetalleReceta.route,
+                        arguments = listOf(
+                            navArgument("recetaId") {
+                                type = NavType.IntType
+                            }
+                        )
+                    ) { backStackEntry ->
+
+                        val recetaId = backStackEntry.arguments?.getInt("recetaId") ?: 0
+                        val recetaViewModel: RecetaViewModel = viewModel()
+
+                        DetalleRecetaScreen(
+                            recetaId = recetaId,
+                            viewModel = recetaViewModel,
+                            onVolver = {
+                                navController.popBackStack()
+                            }
+                        )
+                    }
                 }
             }
         }
