@@ -78,14 +78,15 @@ fun LoginScreen(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Logo y propuesta de valor (reemplazan a una pantalla Splash separada)
+            // Logo de marca: la "M" de la guía de identidad
+            // (el ícono "M APP" se muestra en la pantalla de arranque del sistema)
             Image(
-                painter = painterResource(id = R.drawable.logo),
-                contentDescription = "Logo Martini App",
-                contentScale = ContentScale.Crop,
+                painter = painterResource(id = R.drawable.logo_m),
+                contentDescription = "Logo Martini",
+                contentScale = ContentScale.Fit,
                 modifier = Modifier
-                    .size(120.dp)
-                    .clip(RoundedCornerShape(28.dp))
+                    .size(112.dp)
+                    .clip(RoundedCornerShape(20.dp))
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
