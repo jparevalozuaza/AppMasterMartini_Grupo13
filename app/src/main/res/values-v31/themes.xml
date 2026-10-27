@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android 12 o superior: la pantalla de arranque muestra el ícono "M APP"
+         sobre el color crema de la marca, en lugar de un fondo blanco -->
+    <style name="Theme.AppMasterMartini_Grupo13" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowSplashScreenBackground">#FAF8F2</item>
+    </style>
+</resources>
