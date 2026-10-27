@@ -69,6 +69,21 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch { _navigationEvents.emit(NavigationEvent.NavigateUp) }
     }
 
+    // Navega a "destino" y borra del historial todo hasta "limpiarHasta" (incluida).
+    // Se usa al iniciar sesión (para que "atrás" no vuelva al Login) y al cerrar sesión.
+    fun navegarLimpiando(destino: Screen, limpiarHasta: Screen) {
+        viewModelScope.launch {
+            _navigationEvents.emit(
+                NavigationEvent.NavigateTo(
+                    route = destino,
+                    popUpToRoute = limpiarHasta,
+                    inclusive = true,
+                    singleTop = true
+                )
+            )
+        }
+    }
+
     fun navigateToRoute(route: String) {
         viewModelScope.launch {
             _navigationEvents.emit(

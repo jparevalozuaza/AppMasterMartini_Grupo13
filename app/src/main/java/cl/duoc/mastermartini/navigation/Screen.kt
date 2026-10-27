@@ -3,6 +3,17 @@ sealed class Screen(
     val route: String,
     val titulo: String
 ) {
+    // Pantallas de acceso (Integrante 1)
+    data object Login : Screen(
+        route = "login",
+        titulo = "Ingresar"
+    )
+
+    data object Registro : Screen(
+        route = "registro",
+        titulo = "Crear cuenta"
+    )
+
     data object Home : Screen(
         route = "home",
         titulo = "Inicio"

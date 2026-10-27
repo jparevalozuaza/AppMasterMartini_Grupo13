@@ -102,6 +102,7 @@ fun CatalogoScreen(viewModel: MainViewModel) {
                                     Screen.Favoritos -> Icons.Filled.Star
                                     Screen.Recetas -> Icons.Filled.Star
                                     Screen.DetalleReceta -> Icons.Filled.Star
+                                    else -> Icons.Filled.Star // Login y Registro no están en esta barra
                                 },
                                 contentDescription = screen.titulo
                             )
