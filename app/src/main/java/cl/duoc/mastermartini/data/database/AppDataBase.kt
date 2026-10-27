@@ -1,32 +1,99 @@
+
 package cl.duoc.mastermartini.data.database
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import cl.duoc.mastermartini.data.dao.FavoritoDao
 import cl.duoc.mastermartini.data.dao.RecetaDao
 import cl.duoc.mastermartini.data.dao.UsuarioDao
+import cl.duoc.mastermartini.data.entity.FavoritoEntity
 import cl.duoc.mastermartini.data.entity.RecetaEntity
 import cl.duoc.mastermartini.data.entity.UsuarioEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-// version = 2 porque se agregó la tabla "usuarios" (Integrante 1).
-// Cada vez que se agregue o cambie una tabla, hay que subir este número.
 @Database(
-    entities = [RecetaEntity::class, UsuarioEntity::class],
-    version = 2,
+    entities = [
+        RecetaEntity::class,
+        FavoritoEntity::class,
+        UsuarioEntity::class
+    ],
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun recetaDao(): RecetaDao
-
+    abstract fun favoritoDao(): FavoritoDao
     abstract fun usuarioDao(): UsuarioDao
 
     companion object {
+
+        /*
+         * Base de datos versión 1:
+         * se agregan las tablas de favoritos y usuarios.
+         */
+        private val MIGRATION_1_3 = object : Migration(1, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                crearTablaFavoritos(db)
+                crearTablaUsuarios(db)
+            }
+        }
+
+        /*
+         * Base de datos versión 2:
+         * se crean únicamente las tablas que falten.
+         * Esto permite integrar las dos variantes de la versión 2.
+         */
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                crearTablaFavoritos(db)
+                crearTablaUsuarios(db)
+            }
+        }
+
+        private fun crearTablaFavoritos(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS favoritos (
+                    contenidoId INTEGER NOT NULL,
+                    PRIMARY KEY(contenidoId)
+                )
+                """.trimIndent()
+            )
+        }
+
+        private fun crearTablaUsuarios(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS usuarios (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    nombre TEXT NOT NULL,
+                    email TEXT NOT NULL,
+                    telefono TEXT NOT NULL,
+                    rut TEXT NOT NULL,
+                    tipoNegocio TEXT NOT NULL,
+                    tamanoNegocio TEXT NOT NULL,
+                    direccion TEXT NOT NULL,
+                    intereses TEXT NOT NULL,
+                    fotoPath TEXT,
+                    claveHash TEXT NOT NULL
+                )
+                """.trimIndent()
+            )
+
+            db.execSQL(
+                """
+                CREATE UNIQUE INDEX IF NOT EXISTS index_usuarios_email
+                ON usuarios (email)
+                """.trimIndent()
+            )
+        }
 
         @Volatile
         private var INSTANCE: AppDatabase? = null
@@ -39,6 +106,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "martini_database"
                 )
+                    .addMigrations(MIGRATION_1_3, MIGRATION_2_3)
                     .addCallback(object : RoomDatabase.Callback() {
 
                         override fun onCreate(db: SupportSQLiteDatabase) {
@@ -51,9 +119,6 @@ abstract class AppDatabase : RoomDatabase() {
                             }
                         }
                     })
-                    // MVP académico: si cambia la versión, se recrea la base
-                    // (y el callback vuelve a cargar las recetas iniciales)
-                    .fallbackToDestructiveMigration()
                     .build()
 
                 INSTANCE = instance

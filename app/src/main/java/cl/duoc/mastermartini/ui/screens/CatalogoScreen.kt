@@ -250,7 +250,3 @@ fun CatalogoScreen(viewModel: MainViewModel) {
     }
 }
 
-@Composable
-fun CatalogoScreenPreview() {
-    CatalogoScreen(viewModel = MainViewModel())
-}

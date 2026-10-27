@@ -5,7 +5,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cl.duoc.mastermartini.navigation.Screen
@@ -43,10 +42,4 @@ fun PerfilScreen(viewModel: MainViewModel) {
             ) { Text("Volver atrás", fontSize = 18.sp) }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PerfilScreenPreview() {
-    PerfilScreen(viewModel = MainViewModel())
 }

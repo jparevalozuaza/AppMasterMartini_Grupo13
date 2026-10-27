@@ -1,53 +1,71 @@
+
 package cl.duoc.mastermartini.viewmodel
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import cl.duoc.mastermartini.data.database.AppDatabase
+import cl.duoc.mastermartini.data.repository.FavoritoRepository
 import cl.duoc.mastermartini.navigation.NavigationEvent
 import cl.duoc.mastermartini.navigation.Screen
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.State
-// ViewModel = la "ventanilla" que recibe pedidos desde las pantallas.
-// Sobrevive a cambios como girar el celular (las pantallas, en cambio, se redibujan).
-class MainViewModel : ViewModel() {
 
-    // FLOW = un "canal" por donde viajan los eventos.
-    // El guion bajo (_) indica que es privado: solo el ViewModel puede ENVIAR por él.
+// ViewModel: administra el estado y las acciones de las pantallas.
+class MainViewModel(application: Application) : AndroidViewModel(application) {
+
+    // Repositorio que permite guardar y consultar favoritos con Room.
+    private val favoritoDao =
+        AppDatabase.getDatabase(application).favoritoDao()
+
+    private val favoritoRepository =
+        FavoritoRepository(favoritoDao)
+
+    // Canal de eventos para la navegación.
     private val _navigationEvents = MutableSharedFlow<NavigationEvent>()
 
-    // Versión de solo lectura: MainActivity puede ESCUCHAR, pero no enviar.
-    val navigationEvents: SharedFlow<NavigationEvent> = _navigationEvents.asSharedFlow()
+    val navigationEvents: SharedFlow<NavigationEvent> =
+        _navigationEvents.asSharedFlow()
 
-    // Lista de identificadores de contenidos favoritos.
+    // Estado de los identificadores de contenidos favoritos.
     private val _favoritos = mutableStateOf(setOf<Int>())
+
     val favoritos: State<Set<Int>> = _favoritos
+
+    // Carga los favoritos guardados y observa sus cambios.
+    init {
+        viewModelScope.launch {
+            favoritoRepository.obtenerTodos().collect { lista ->
+                _favoritos.value = lista.map { it.contenidoId }.toSet()
+            }
+        }
+    }
 
     // Comprueba si un contenido está marcado como favorito.
     fun esFavorito(contenidoId: Int): Boolean {
         return _favoritos.value.contains(contenidoId)
     }
 
-    // Marca o desmarca un contenido como favorito.
+    // Guarda o elimina un favorito en Room.
     fun alternarFavorito(contenidoId: Int) {
-        val favoritosActuales = _favoritos.value
+        viewModelScope.launch {
+            val esFavoritoActual =
+                _favoritos.value.contains(contenidoId)
 
-        _favoritos.value = if (favoritosActuales.contains(contenidoId)) {
-            favoritosActuales - contenidoId
-        } else {
-            favoritosActuales + contenidoId
+            if (esFavoritoActual) {
+                favoritoRepository.eliminar(contenidoId)
+            } else {
+                favoritoRepository.insertar(contenidoId)
+            }
         }
     }
 
-    // Ir a una pantalla.
-    // popUpToRoute = Home: Inicio siempre queda como "base" del historial,
-    //   así el botón "atrás" desde cualquier pantalla devuelve a Inicio.
-    // singleTop = true: si ya estás en esa pantalla, no se abre otra copia encima.
+    // Navega a una pantalla y mantiene Inicio como base del historial.
     fun navigateTo(screen: Screen) {
-        // viewModelScope.launch = ejecuta la tarea en segundo plano,
-        // y la cancela automáticamente si el ViewModel deja de existir.
         viewModelScope.launch {
             _navigationEvents.emit(
                 NavigationEvent.NavigateTo(
@@ -59,18 +77,26 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    // Volver a la pantalla anterior
+    // Vuelve a la pantalla anterior.
     fun navigateBack() {
-        viewModelScope.launch { _navigationEvents.emit(NavigationEvent.PopBackStack) }
+        viewModelScope.launch {
+            _navigationEvents.emit(
+                NavigationEvent.PopBackStack
+            )
+        }
     }
 
-    // Subir un nivel en la jerarquía
+    // Sube un nivel en la jerarquía de navegación.
     fun navigateUp() {
-        viewModelScope.launch { _navigationEvents.emit(NavigationEvent.NavigateUp) }
+        viewModelScope.launch {
+            _navigationEvents.emit(
+                NavigationEvent.NavigateUp
+            )
+        }
     }
 
-    // Navega a "destino" y borra del historial todo hasta "limpiarHasta" (incluida).
-    // Se usa al iniciar sesión (para que "atrás" no vuelva al Login) y al cerrar sesión.
+    // Navega a una pantalla eliminando del historial la pantalla indicada.
+    // Se utiliza al iniciar y cerrar sesión.
     fun navegarLimpiando(destino: Screen, limpiarHasta: Screen) {
         viewModelScope.launch {
             _navigationEvents.emit(
@@ -84,6 +110,7 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    // Navega directamente a una ruta.
     fun navigateToRoute(route: String) {
         viewModelScope.launch {
             _navigationEvents.emit(
