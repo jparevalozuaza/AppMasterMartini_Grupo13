@@ -10,18 +10,34 @@ import cl.duoc.mastermartini.data.entity.RecetaEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import androidx.room.migration.Migration
+import cl.duoc.mastermartini.data.dao.FavoritoDao
+import cl.duoc.mastermartini.data.entity.FavoritoEntity
 
 @Database(
-    entities = [RecetaEntity::class],
-    version = 1,
+    entities = [RecetaEntity::class, FavoritoEntity::class],
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun recetaDao(): RecetaDao
+    abstract fun favoritoDao(): FavoritoDao
 
     companion object {
 
+        private val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+            CREATE TABLE IF NOT EXISTS favoritos (
+                contenidoId INTEGER NOT NULL,
+                PRIMARY KEY(contenidoId)
+            )
+            """.trimIndent()
+                )
+            }
+        }
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
@@ -33,6 +49,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "martini_database"
                 )
+                    .addMigrations(MIGRATION_1_2)
                     .addCallback(object : RoomDatabase.Callback() {
 
                         override fun onCreate(db: SupportSQLiteDatabase) {
