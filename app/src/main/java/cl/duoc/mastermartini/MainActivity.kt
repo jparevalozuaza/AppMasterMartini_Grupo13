@@ -21,6 +21,7 @@ import cl.duoc.mastermartini.viewmodel.AuthViewModel
 import cl.duoc.mastermartini.ui.screens.PerfilScreen
 import cl.duoc.mastermartini.ui.theme.AppMasterMartini_Grupo13Theme
 import cl.duoc.mastermartini.viewmodel.MainViewModel
+import cl.duoc.mastermartini.viewmodel.PerfilViewModel
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import cl.duoc.mastermartini.repository.ContenidoRepository
@@ -41,6 +42,7 @@ class MainActivity : ComponentActivity() {
                 // ViewModels compartidos, creados una sola vez para toda la app
                 val viewModel: MainViewModel = viewModel()          // navegación
                 val authViewModel: AuthViewModel = viewModel()      // Login y Registro
+                val perfilViewModel: PerfilViewModel = viewModel()  // Perfil y preferencias
                 // NavController = el "conductor" que cambia de pantalla y lleva el historial
                 val navController = rememberNavController()
 
@@ -82,7 +84,9 @@ class MainActivity : ComponentActivity() {
 
                     composable(Screen.Home.route) { HomeScreen(viewModel = viewModel) }
                     composable(Screen.Catalogo.route) { CatalogoScreen(viewModel = viewModel) }
-                    composable(Screen.Perfil.route) { PerfilScreen(viewModel = viewModel) }
+                    composable(Screen.Perfil.route) {
+                        PerfilScreen(mainViewModel = viewModel, perfilViewModel = perfilViewModel)
+                    }
                     composable(
                         route = Screen.Detalle.route,
                         arguments = listOf(
