@@ -38,7 +38,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import cl.duoc.mastermartini.model.OpcionesRegistro
 import cl.duoc.mastermartini.navigation.Screen
-import cl.duoc.mastermartini.ui.components.BotonUbicacion
 import cl.duoc.mastermartini.ui.components.ChipsSeleccion
 import cl.duoc.mastermartini.ui.components.MartiniTextField
 import cl.duoc.mastermartini.ui.components.PrimaryButton
@@ -163,12 +162,6 @@ fun RegistroScreen(
                 icono = Icons.Filled.Place,
                 imeAction = ImeAction.Done
             )
-            // RECURSO NATIVO: ubicación. Si se rechaza el permiso, el campo manual sigue disponible.
-            BotonUbicacion(
-                onDireccionObtenida = authViewModel::onDireccionChange,
-                onMensaje = authViewModel::mostrarMensajeRegistro
-            )
-
             // ---------- SECCIÓN 3: INTERESES ----------
             TituloSeccion("3. Tus intereses")
             ChipsSeleccion(

@@ -64,6 +64,4 @@ dependencies {
     ksp("androidx.room:room-compiler:2.7.0")
     // DataStore: guarda preferencias pequeñas (sesión y accesibilidad)
     implementation("androidx.datastore:datastore-preferences:1.1.1")
-    // Ubicación del dispositivo (Fused Location Provider de Google)
-    implementation("com.google.android.gms:play-services-location:21.3.0")
 }
