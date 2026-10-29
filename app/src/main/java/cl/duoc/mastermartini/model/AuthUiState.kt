@@ -12,11 +12,12 @@ data class LoginUiState(
     val emailError: String? = null,
     val claveError: String? = null,
     val loginError: String? = null,   // error general: "correo o contraseña incorrectos"
-    val cargando: Boolean = false
+    val cargando: Boolean = false,
+    val ingresando: Boolean = false   // true = login correcto: se muestra la barra de carga animada
 ) {
-    // El botón "Ingresar" se habilita solo si hay datos y no está cargando
+    // El botón "Ingresar" se habilita solo si hay datos y no se está procesando el ingreso
     val puedeIngresar: Boolean
-        get() = email.isNotBlank() && clave.isNotBlank() && !cargando
+        get() = email.isNotBlank() && clave.isNotBlank() && !cargando && !ingresando
 }
 
 data class RegistroUiState(

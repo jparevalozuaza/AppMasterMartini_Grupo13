@@ -10,6 +10,7 @@ import cl.duoc.mastermartini.data.repository.UsuarioRepository
 import cl.duoc.mastermartini.model.LoginUiState
 import cl.duoc.mastermartini.model.RegistroErrores
 import cl.duoc.mastermartini.model.RegistroUiState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -66,6 +67,9 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             val usuario = usuarioRepository.validarCredenciales(actual.email, actual.clave)
             if (usuario != null) {
                 preferencias.guardarSesion(usuario.email)
+                // ANIMACIÓN: se muestra la barra de carga y, tras un momento, se pasa a Inicio
+                _login.update { it.copy(cargando = false, ingresando = true) }
+                delay(1500)
                 _login.value = LoginUiState()   // limpia el formulario
                 onExito()
             } else {
