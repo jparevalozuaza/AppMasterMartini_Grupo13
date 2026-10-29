@@ -130,10 +130,6 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun mostrarMensajeRegistro(mensaje: String) {
-        _registro.update { it.copy(mensaje = mensaje) }
-    }
-
     fun consumirMensajeRegistro() {
         _registro.update { it.copy(mensaje = null) }
     }
