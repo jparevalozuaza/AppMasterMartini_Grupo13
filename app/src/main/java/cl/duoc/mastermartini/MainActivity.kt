@@ -4,6 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -72,7 +77,20 @@ class MainActivity : ComponentActivity() {
                 NavHost(
                     navController = navController,
                     startDestination = Screen.Login.route,  // la app ahora inicia en Login
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    // ANIMACIÓN: transiciones entre pantallas (300 ms)
+                    // Al avanzar: la nueva pantalla aparece desvaneciéndose y deslizándose un poco desde la derecha
+                    enterTransition = {
+                        fadeIn(animationSpec = tween(300)) +
+                            slideInHorizontally(animationSpec = tween(300)) { ancho -> ancho / 4 }
+                    },
+                    exitTransition = { fadeOut(animationSpec = tween(300)) },
+                    // Al volver atrás: el movimiento es al revés
+                    popEnterTransition = { fadeIn(animationSpec = tween(300)) },
+                    popExitTransition = {
+                        fadeOut(animationSpec = tween(300)) +
+                            slideOutHorizontally(animationSpec = tween(300)) { ancho -> ancho / 4 }
+                    }
                 ) {
                     // Pantallas de acceso (Integrante 1)
                     composable(Screen.Login.route) {
