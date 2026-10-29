@@ -4,9 +4,21 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -43,6 +55,16 @@ class MainActivity : ComponentActivity() {
                 val viewModel: MainViewModel = viewModel()          // navegación
                 val authViewModel: AuthViewModel = viewModel()      // Login y Registro
                 val perfilViewModel: PerfilViewModel = viewModel()  // Perfil y preferencias
+
+                // ACCESIBILIDAD (preferencias guardadas en DataStore y elegidas en Perfil)
+                val textoGrande by perfilViewModel.textoGrande.collectAsState()
+                val reducirMovimiento by perfilViewModel.reducirMovimiento.collectAsState()
+                // Texto grande: todas las letras de la app crecen un 25 %
+                val densidadActual = LocalDensity.current
+                val densidadApp = Density(
+                    density = densidadActual.density,
+                    fontScale = densidadActual.fontScale * (if (textoGrande) 1.25f else 1f)
+                )
                 // NavController = el "conductor" que cambia de pantalla y lleva el historial
                 val navController = rememberNavController()
 
@@ -68,78 +90,103 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                // NAVHOST = el "escenario": muestra la pantalla que corresponde a la ruta actual
-                NavHost(
-                    navController = navController,
-                    startDestination = Screen.Login.route,  // la app ahora inicia en Login
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    // Pantallas de acceso (Integrante 1)
-                    composable(Screen.Login.route) {
-                        LoginScreen(authViewModel = authViewModel, mainViewModel = viewModel)
-                    }
-                    composable(Screen.Registro.route) {
-                        RegistroScreen(authViewModel = authViewModel, mainViewModel = viewModel)
-                    }
-
-                    composable(Screen.Home.route) { HomeScreen(viewModel = viewModel) }
-                    composable(Screen.Catalogo.route) { CatalogoScreen(viewModel = viewModel) }
-                    composable(Screen.Perfil.route) {
-                        PerfilScreen(mainViewModel = viewModel, perfilViewModel = perfilViewModel)
-                    }
-                    composable(
-                        route = Screen.Detalle.route,
-                        arguments = listOf(
-                            navArgument("contenidoId") {
-                                type = NavType.IntType
-                            }
-                        )
-                    ) { backStackEntry ->
-
-                        val contenidoId = backStackEntry.arguments
-                            ?.getInt("contenidoId")
-
-                        val contenido = ContenidoRepository.contenidos.find {
-                            it.id == contenidoId
+                // CompositionLocalProvider: entrega la escala de texto a TODAS las pantallas
+                CompositionLocalProvider(LocalDensity provides densidadApp) {
+                    // NAVHOST = el "escenario": muestra la pantalla que corresponde a la ruta actual
+                    NavHost(
+                        navController = navController,
+                        startDestination = Screen.Login.route,  // la app ahora inicia en Login
+                        modifier = Modifier.fillMaxSize(),
+                        // ANIMACIÓN: transiciones entre pantallas (300 ms).
+                        // Si el usuario activó "Reducir movimiento", se cambia de pantalla sin animación.
+                        // Al avanzar: la nueva pantalla aparece desvaneciéndose y deslizándose un poco desde la derecha
+                        enterTransition = {
+                            if (reducirMovimiento) EnterTransition.None
+                            else fadeIn(animationSpec = tween(300)) +
+                                slideInHorizontally(animationSpec = tween(300)) { ancho -> ancho / 4 }
+                        },
+                        exitTransition = {
+                            if (reducirMovimiento) ExitTransition.None
+                            else fadeOut(animationSpec = tween(300))
+                        },
+                        // Al volver atrás: el movimiento es al revés
+                        popEnterTransition = {
+                            if (reducirMovimiento) EnterTransition.None
+                            else fadeIn(animationSpec = tween(300))
+                        },
+                        popExitTransition = {
+                            if (reducirMovimiento) ExitTransition.None
+                            else fadeOut(animationSpec = tween(300)) +
+                                slideOutHorizontally(animationSpec = tween(300)) { ancho -> ancho / 4 }
+                        }
+                    ) {
+                        // Pantallas de acceso (Integrante 1)
+                        composable(Screen.Login.route) {
+                            LoginScreen(authViewModel = authViewModel, mainViewModel = viewModel)
+                        }
+                        composable(Screen.Registro.route) {
+                            RegistroScreen(authViewModel = authViewModel, mainViewModel = viewModel)
                         }
 
-                        DetalleScreen(
-                            contenido = contenido,
-                            viewModel = viewModel
-                        )
-                    }
-                    composable(Screen.Aprender.route) { AprenderScreen(viewModel = viewModel) }
-                    composable(Screen.Favoritos.route) { FavoritosScreen(viewModel = viewModel) }
-                    composable(Screen.Recetas.route) {
-                        val recetaViewModel: RecetaViewModel = viewModel()
+                        composable(Screen.Home.route) { HomeScreen(viewModel = viewModel) }
+                        composable(Screen.Catalogo.route) { CatalogoScreen(viewModel = viewModel) }
+                        composable(Screen.Perfil.route) {
+                            PerfilScreen(mainViewModel = viewModel, perfilViewModel = perfilViewModel)
+                        }
+                        composable(
+                            route = Screen.Detalle.route,
+                            arguments = listOf(
+                                navArgument("contenidoId") {
+                                    type = NavType.IntType
+                                }
+                            )
+                        ) { backStackEntry ->
 
-                        RecetasScreen(
-                            viewModel = recetaViewModel,
-                            navController = navController
-                        )
-                    }
+                            val contenidoId = backStackEntry.arguments
+                                ?.getInt("contenidoId")
 
-                    composable(
-                        route = Screen.DetalleReceta.route,
-                        arguments = listOf(
-                            navArgument("recetaId") {
-                                type = NavType.IntType
+                            val contenido = ContenidoRepository.contenidos.find {
+                                it.id == contenidoId
                             }
-                        )
-                    ) { backStackEntry ->
 
-                        val recetaId = backStackEntry.arguments?.getInt("recetaId") ?: 0
-                        val recetaViewModel: RecetaViewModel = viewModel()
+                            DetalleScreen(
+                                contenido = contenido,
+                                viewModel = viewModel
+                            )
+                        }
+                        composable(Screen.Aprender.route) { AprenderScreen(viewModel = viewModel) }
+                        composable(Screen.Favoritos.route) { FavoritosScreen(viewModel = viewModel) }
+                        composable(Screen.Recetas.route) {
+                            val recetaViewModel: RecetaViewModel = viewModel()
 
-                        DetalleRecetaScreen(
-                            recetaId = recetaId,
-                            viewModel = recetaViewModel,
-                            onVolver = {
-                                navController.popBackStack()
-                            }
-                        )
+                            RecetasScreen(
+                                viewModel = recetaViewModel,
+                                navController = navController
+                            )
+                        }
+
+                        composable(
+                            route = Screen.DetalleReceta.route,
+                            arguments = listOf(
+                                navArgument("recetaId") {
+                                    type = NavType.IntType
+                                }
+                            )
+                        ) { backStackEntry ->
+
+                            val recetaId = backStackEntry.arguments?.getInt("recetaId") ?: 0
+                            val recetaViewModel: RecetaViewModel = viewModel()
+
+                            DetalleRecetaScreen(
+                                recetaId = recetaId,
+                                viewModel = recetaViewModel,
+                                onVolver = {
+                                    navController.popBackStack()
+                                }
+                            )
+                        }
                     }
-                }
+                } // fin CompositionLocalProvider
             }
         }
     }
