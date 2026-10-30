@@ -5,19 +5,12 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import cl.duoc.mastermartini.data.database.AppDatabase
 import cl.duoc.mastermartini.data.entity.UsuarioEntity
-import cl.duoc.mastermartini.data.preferences.PreferenciasRepository
+import cl.duoc.mastermartini.data.repository.PreferenciasRepository
 import cl.duoc.mastermartini.data.repository.UsuarioRepository
 import cl.duoc.mastermartini.model.LoginUiState
 import cl.duoc.mastermartini.model.RegistroErrores
 import cl.duoc.mastermartini.model.RegistroUiState
-import cl.duoc.mastermartini.validation.validarClaveLogin
-import cl.duoc.mastermartini.validation.validarClaveNueva
-import cl.duoc.mastermartini.validation.validarEmail
-import cl.duoc.mastermartini.validation.validarIntereses
-import cl.duoc.mastermartini.validation.validarNombre
-import cl.duoc.mastermartini.validation.validarRut
-import cl.duoc.mastermartini.validation.validarSeleccion
-import cl.duoc.mastermartini.validation.validarTelefono
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -74,6 +67,9 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             val usuario = usuarioRepository.validarCredenciales(actual.email, actual.clave)
             if (usuario != null) {
                 preferencias.guardarSesion(usuario.email)
+                // ANIMACIÓN: se muestra la barra de carga y, tras un momento, se pasa a Inicio
+                _login.update { it.copy(cargando = false, ingresando = true) }
+                delay(1500)
                 _login.value = LoginUiState()   // limpia el formulario
                 onExito()
             } else {
@@ -128,10 +124,6 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             val nuevos = if (interes in it.intereses) it.intereses - interes else it.intereses + interes
             it.copy(intereses = nuevos, errores = it.errores.copy(intereses = null))
         }
-    }
-
-    fun mostrarMensajeRegistro(mensaje: String) {
-        _registro.update { it.copy(mensaje = mensaje) }
     }
 
     fun consumirMensajeRegistro() {

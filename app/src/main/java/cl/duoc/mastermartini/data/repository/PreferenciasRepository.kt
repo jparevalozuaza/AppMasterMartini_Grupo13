@@ -1,4 +1,4 @@
-package cl.duoc.mastermartini.data.preferences
+package cl.duoc.mastermartini.data.repository
 
 import android.content.Context
 import androidx.datastore.core.DataStore

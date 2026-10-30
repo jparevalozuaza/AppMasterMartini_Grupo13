@@ -1,11 +1,13 @@
-package cl.duoc.mastermartini.validation
+package cl.duoc.mastermartini.viewmodel
 
 // ─────────────────────────────────────────────────────────────
 // VALIDACIONES REUTILIZABLES (guía 8 pantallas, sección 7.2)
 // Cada función recibe un dato y devuelve:
 //   null   → el dato es válido
 //   String → el mensaje de error que verá el usuario
-// No dependen de Compose: las usan AuthViewModel y PerfilViewModel.
+// Están en el paquete viewmodel porque son lógica de presentación:
+// las usan AuthViewModel y PerfilViewModel (un solo lugar, sin repetir código).
+// No dependen de Compose.
 // ─────────────────────────────────────────────────────────────
 
 private val REGEX_EMAIL = Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
