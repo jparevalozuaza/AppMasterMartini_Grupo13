@@ -16,14 +16,17 @@ import cl.duoc.mastermartini.data.entity.UsuarioEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import cl.duoc.mastermartini.data.dao.ProgresoDao
+import cl.duoc.mastermartini.data.entity.ProgresoEntity
 
 @Database(
     entities = [
         RecetaEntity::class,
         FavoritoEntity::class,
-        UsuarioEntity::class
+        UsuarioEntity::class,
+        ProgresoEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -31,6 +34,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun recetaDao(): RecetaDao
     abstract fun favoritoDao(): FavoritoDao
     abstract fun usuarioDao(): UsuarioDao
+
+    abstract fun progresoDao(): ProgresoDao
 
     companion object {
 
@@ -94,6 +99,19 @@ abstract class AppDatabase : RoomDatabase() {
                 """.trimIndent()
             )
         }
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+            CREATE TABLE IF NOT EXISTS progreso (
+                contenidoId INTEGER NOT NULL,
+                completado INTEGER NOT NULL,
+                PRIMARY KEY(contenidoId)
+            )
+            """.trimIndent()
+                )
+            }
+        }
 
         @Volatile
         private var INSTANCE: AppDatabase? = null
@@ -106,7 +124,11 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "martini_database"
                 )
-                    .addMigrations(MIGRATION_1_3, MIGRATION_2_3)
+                    .addMigrations(
+                        MIGRATION_1_3,
+                        MIGRATION_2_3,
+                        MIGRATION_3_4
+                    )
                     .addCallback(object : RoomDatabase.Callback() {
 
                         override fun onCreate(db: SupportSQLiteDatabase) {

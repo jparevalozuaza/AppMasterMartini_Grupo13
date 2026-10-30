@@ -1,3 +1,4 @@
+
 package cl.duoc.mastermartini.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
@@ -7,8 +8,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -33,7 +38,17 @@ fun DetalleRecetaScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Detalle de la receta") }
+                title = {
+                    Text("Detalle de la receta")
+                },
+                navigationIcon = {
+                    IconButton(onClick = onVolver) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Volver a recetas"
+                        )
+                    }
+                }
             )
         }
     ) { innerPadding ->
@@ -46,7 +61,9 @@ fun DetalleRecetaScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+
             if (receta != null) {
+
                 Text(
                     text = receta.titulo,
                     style = MaterialTheme.typography.headlineSmall
@@ -86,7 +103,9 @@ fun DetalleRecetaScreen(
                     text = receta.preparacion,
                     style = MaterialTheme.typography.bodyLarge
                 )
+
             } else {
+
                 Text(
                     text = "No se encontró la receta.",
                     style = MaterialTheme.typography.bodyLarge

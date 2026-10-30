@@ -1,8 +1,10 @@
 package cl.duoc.mastermartini.navigation
+
 sealed class Screen(
     val route: String,
     val titulo: String
 ) {
+
     // Pantallas de acceso (Integrante 1)
     data object Login : Screen(
         route = "login",
@@ -29,12 +31,40 @@ sealed class Screen(
         titulo = "Aprender"
     )
 
+    data object Cursos : Screen(
+        route = "cursos",
+        titulo = "Cursos"
+    )
+
+    data object DetalleCurso : Screen(
+        route = "detalleCurso/{cursoId}",
+        titulo = "Detalle del curso"
+    ) {
+        fun crearRuta(cursoId: Int): String {
+            return "detalleCurso/$cursoId"
+        }
+    }
+
+    data object Leccion : Screen(
+        route = "leccion/{leccionId}",
+        titulo = "Lección"
+    ) {
+        fun crearRuta(leccionId: Int): String {
+            return "leccion/$leccionId"
+        }
+    }
+
+
+
     data object Favoritos : Screen(
         route = "favoritos",
         titulo = "Favoritos"
     )
 
-    data object Recetas : Screen(route = "recetas", titulo = "Recetas")
+    data object Recetas : Screen(
+        route = "recetas",
+        titulo = "Recetas"
+    )
 
     data object DetalleReceta : Screen(
         route = "detalleReceta/{recetaId}",
@@ -44,6 +74,7 @@ sealed class Screen(
             return "detalleReceta/$recetaId"
         }
     }
+
     data object Perfil : Screen(
         route = "perfil",
         titulo = "Perfil"
@@ -57,5 +88,4 @@ sealed class Screen(
             return "detalle/$contenidoId"
         }
     }
-
 }
