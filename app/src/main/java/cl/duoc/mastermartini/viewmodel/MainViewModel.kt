@@ -1,4 +1,3 @@
-
 package cl.duoc.mastermartini.viewmodel
 
 import android.app.Application
@@ -14,6 +13,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import cl.duoc.mastermartini.data.repository.ProgresoRepository
 
 // ViewModel: administra el estado y las acciones de las pantallas.
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -24,6 +24,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val favoritoRepository =
         FavoritoRepository(favoritoDao)
+
+    private val progresoDao =
+        AppDatabase.getDatabase(application).progresoDao()
+
+    private val progresoRepository =
+        ProgresoRepository(progresoDao)
+
+    private val _progreso =
+        mutableStateOf<Set<Int>>(emptySet())
+
+    val progreso: State<Set<Int>> = _progreso
 
     // Canal de eventos para la navegación.
     private val _navigationEvents = MutableSharedFlow<NavigationEvent>()
@@ -43,6 +54,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 _favoritos.value = lista.map { it.contenidoId }.toSet()
             }
         }
+
+        viewModelScope.launch {
+            progresoRepository.obtenerTodos().collect { lista ->
+                _progreso.value = lista
+                    .filter { it.completado }
+                    .map { it.contenidoId }
+                    .toSet()
+            }
+        }
     }
 
     // Comprueba si un contenido está marcado como favorito.
@@ -60,6 +80,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 favoritoRepository.eliminar(contenidoId)
             } else {
                 favoritoRepository.insertar(contenidoId)
+            }
+        }
+    }
+
+    fun estaCompletado(contenidoId: Int): Boolean {
+        return _progreso.value.contains(contenidoId)
+    }
+
+    fun alternarProgreso(contenidoId: Int) {
+        viewModelScope.launch {
+            if (_progreso.value.contains(contenidoId)) {
+                progresoRepository.marcarPendiente(contenidoId)
+            } else {
+                progresoRepository.marcarCompletado(contenidoId)
             }
         }
     }

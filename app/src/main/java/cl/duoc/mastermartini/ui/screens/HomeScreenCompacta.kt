@@ -1,10 +1,18 @@
+
 package cl.duoc.mastermartini.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,18 +23,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
+import cl.duoc.mastermartini.navigation.Screen
 import cl.duoc.mastermartini.repository.ContenidoRepository
+import cl.duoc.mastermartini.viewmodel.MainViewModel
 
 @Composable
-fun HomeScreenCompacta() {
+fun HomeScreenCompacta(viewModel: MainViewModel? = null) {
 
     var busqueda by remember { mutableStateOf("") }
-
     val contenidos = ContenidoRepository.contenidos
 
     val contenidosFiltrados = contenidos.filter { contenido ->
@@ -38,7 +42,6 @@ fun HomeScreenCompacta() {
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp),
-        contentPadding = PaddingValues(vertical = 20.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
@@ -55,6 +58,31 @@ fun HomeScreenCompacta() {
                     text = "Aprende, crea y lleva tus conocimientos " +
                             "gastronómicos al siguiente nivel."
                 )
+            }
+        }
+
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Button(
+                    onClick = {
+                        viewModel?.navigateToRoute(Screen.Catalogo.route)
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Catálogo")
+                }
+
+                Button(
+                    onClick = {
+                        viewModel?.navigateToRoute(Screen.Recetas.route)
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Recetas")
+                }
             }
         }
 
@@ -116,6 +144,12 @@ fun HomeScreenCompacta() {
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
+            }
+        }
+
+        if (contenidosFiltrados.isEmpty()) {
+            item {
+                Text("No se encontraron contenidos.")
             }
         }
     }
