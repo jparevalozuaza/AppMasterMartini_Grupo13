@@ -132,6 +132,61 @@ class PerfilViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
+    // Recibe la fotografía tomada con la cámara y la guarda como foto de perfil.
+    fun guardarFotoDesdeCamara(bitmap: Bitmap) {
+        val usuario = _estado.value.usuario ?: return
+
+        viewModelScope.launch {
+            _estado.update { it.copy(guardandoFoto = true) }
+
+            val ruta = withContext(Dispatchers.IO) {
+                try {
+                    val app = getApplication<Application>()
+
+                    // Crear un archivo privado para la fotografía.
+                    val archivo = File(
+                        app.filesDir,
+                        "foto_perfil_${usuario.id}_${System.currentTimeMillis()}.jpg"
+                    )
+
+                    // Guardar la fotografía en formato JPG.
+                    FileOutputStream(archivo).use { salida ->
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 85, salida)
+                    }
+
+                    archivo.absolutePath
+                } catch (e: Exception) {
+                    null
+                }
+            }
+
+            if (ruta == null) {
+                _estado.update {
+                    it.copy(
+                        guardandoFoto = false,
+                        mensaje = "No se pudo guardar la fotografía. Inténtalo nuevamente."
+                    )
+                }
+                return@launch
+            }
+
+            // Actualizar la foto del usuario en Room.
+            val actualizado = usuario.copy(fotoPath = ruta)
+            usuarioRepository.actualizar(actualizado)
+
+            // Eliminar la fotografía anterior después de actualizar el perfil.
+            usuario.fotoPath?.let { File(it).delete() }
+
+            _estado.update {
+                it.copy(
+                    guardandoFoto = false,
+                    usuario = actualizado,
+                    mensaje = "Fotografía actualizada correctamente"
+                )
+            }
+        }
+    }
+
     // SEGURIDAD: la galería solo da permiso TEMPORAL para leer la imagen elegida.
     // Por eso se copia una versión reducida al almacenamiento INTERNO de la app (privado),
     // y en Room se guarda la ruta de esa copia.
