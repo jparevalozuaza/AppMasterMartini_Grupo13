@@ -129,6 +129,8 @@ abstract class AppDatabase : RoomDatabase() {
                         MIGRATION_2_3,
                         MIGRATION_3_4
                     )
+
+
                     .addCallback(object : RoomDatabase.Callback() {
 
                         override fun onCreate(db: SupportSQLiteDatabase) {
@@ -141,6 +143,7 @@ abstract class AppDatabase : RoomDatabase() {
                             }
                         }
                     })
+
                     .build()
 
                 INSTANCE = instance

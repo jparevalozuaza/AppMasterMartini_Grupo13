@@ -9,7 +9,9 @@ import androidx.lifecycle.viewModelScope
 import cl.duoc.mastermartini.data.database.AppDatabase
 import cl.duoc.mastermartini.data.repository.PreferenciasRepository
 import cl.duoc.mastermartini.data.repository.UsuarioRepository
-import cl.duoc.mastermartini.model.PerfilUiState
+import cl.duoc.mastermartini.ui.state.PerfilUiState
+import cl.duoc.mastermartini.utils.validarNombre
+import cl.duoc.mastermartini.utils.validarTelefono
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

@@ -18,7 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cl.duoc.mastermartini.navigation.Screen
-import cl.duoc.mastermartini.repository.CursoRepository
+import cl.duoc.mastermartini.data.repository.CursoRepository
 import cl.duoc.mastermartini.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)

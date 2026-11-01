@@ -1,4 +1,4 @@
-package cl.duoc.mastermartini.model
+package cl.duoc.mastermartini.ui.state
 
 // ─────────────────────────────────────────────────────────────
 // ESTADOS DE LA UI PARA LOGIN Y REGISTRO

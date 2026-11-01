@@ -17,7 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -41,8 +41,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import cl.duoc.mastermartini.navigation.NavigationEvent
 import cl.duoc.mastermartini.navigation.Screen
-import cl.duoc.mastermartini.repository.ContenidoRepository
-import cl.duoc.mastermartini.repository.CursoRepository
+import cl.duoc.mastermartini.data.repository.ContenidoRepository
+import cl.duoc.mastermartini.data.repository.CursoRepository
 import cl.duoc.mastermartini.ui.screens.AprenderScreen
 import cl.duoc.mastermartini.ui.screens.CatalogoScreen
 import cl.duoc.mastermartini.ui.screens.CursosScreen
@@ -151,7 +151,7 @@ class MainActivity : ComponentActivity() {
                                                 restoreState = true
                                             }
                                         },
-                                        icon = { Icon(Icons.Filled.List, contentDescription = "Aprender") },
+                                        icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Aprender") },
                                         label = { Text("Aprender") }
                                     )
                                     NavigationBarItem(
