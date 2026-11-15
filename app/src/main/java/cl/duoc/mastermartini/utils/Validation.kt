@@ -1,4 +1,6 @@
-package cl.duoc.mastermartini.viewmodel
+package cl.duoc.mastermartini.utils
+
+import kotlin.text.iterator
 
 // ─────────────────────────────────────────────────────────────
 // VALIDACIONES REUTILIZABLES (guía 8 pantallas, sección 7.2)

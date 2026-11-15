@@ -1,4 +1,4 @@
-package cl.duoc.mastermartini.repository
+package cl.duoc.mastermartini.data.repository
 
 import cl.duoc.mastermartini.model.Contenido
 

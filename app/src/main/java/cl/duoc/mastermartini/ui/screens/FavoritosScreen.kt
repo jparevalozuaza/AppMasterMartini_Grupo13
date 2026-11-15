@@ -18,7 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cl.duoc.mastermartini.navigation.Screen
-import cl.duoc.mastermartini.repository.ContenidoRepository
+import cl.duoc.mastermartini.data.repository.ContenidoRepository
 import cl.duoc.mastermartini.viewmodel.MainViewModel
 import androidx.compose.material3.OutlinedButton
 

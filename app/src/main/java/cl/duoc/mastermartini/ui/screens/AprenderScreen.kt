@@ -40,7 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import cl.duoc.mastermartini.navigation.Screen
-import cl.duoc.mastermartini.repository.ContenidoRepository
+import cl.duoc.mastermartini.data.repository.ContenidoRepository
 import cl.duoc.mastermartini.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)

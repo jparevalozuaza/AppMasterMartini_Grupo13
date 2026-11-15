@@ -62,6 +62,7 @@ import cl.duoc.mastermartini.ui.components.SecondaryButton
 import cl.duoc.mastermartini.ui.components.TituloSeccion
 import cl.duoc.mastermartini.viewmodel.MainViewModel
 import cl.duoc.mastermartini.viewmodel.PerfilViewModel
+import android.graphics.Bitmap
 
 // ─────────────────────────────────────────────────────────────
 // PANTALLA 8: PERFIL / CONFIGURACIÓN (Integrante 1) — guía sección 6.8
@@ -102,6 +103,18 @@ fun PerfilScreen(
             perfilViewModel.guardarFotoDesdeGaleria(uri)
         } else {
             perfilViewModel.mostrarMensaje("No elegiste ninguna imagen.")
+        }
+    }
+
+    // TakePicturePreview() abre la cámara del dispositivo.
+    // Devuelve un Bitmap con la fotografía o null si se cancela.
+    val lanzadorCamara = rememberLauncherForActivityResult(
+        ActivityResultContracts.TakePicturePreview()
+    ) { bitmap ->
+        if (bitmap != null) {
+            perfilViewModel.guardarFotoDesdeCamara(bitmap)
+        } else {
+            perfilViewModel.mostrarMensaje("No se tomó ninguna fotografía.")
         }
     }
 
@@ -224,6 +237,31 @@ fun PerfilScreen(
                                     Text("Cambiar foto", fontWeight = FontWeight.Bold)
                                 }
                             }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        OutlinedButton(
+                            onClick = {
+                                lanzadorCamara.launch(null)
+                            },
+                            enabled = !estado.guardandoFoto,
+                            shape = RoundedCornerShape(12.dp),
+                            border = BorderStroke(
+                                1.dp,
+                                MaterialTheme.colorScheme.primary
+                            ),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                contentColor = MaterialTheme.colorScheme.tertiary
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 48.dp)
+                        ) {
+                            Text(
+                                "Tomar fotografía",
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
 

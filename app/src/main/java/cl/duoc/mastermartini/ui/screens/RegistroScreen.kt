@@ -36,7 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import cl.duoc.mastermartini.model.OpcionesRegistro
+import cl.duoc.mastermartini.ui.state.OpcionesRegistro
 import cl.duoc.mastermartini.navigation.Screen
 import cl.duoc.mastermartini.ui.components.ChipsSeleccion
 import cl.duoc.mastermartini.ui.components.MartiniTextField

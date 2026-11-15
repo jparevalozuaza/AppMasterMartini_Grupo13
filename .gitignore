@@ -13,3 +13,14 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Backend - Maven y Spring Boot
+**/target/
+
+# Variables de entorno y credenciales
+.env
+.env.*
+!.env.example
+
+# Configuracion local de IntelliJ
+**/.idea/

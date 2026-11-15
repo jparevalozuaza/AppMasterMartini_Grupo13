@@ -1,4 +1,4 @@
-package cl.duoc.mastermartini.model
+package cl.duoc.mastermartini.ui.state
 
 import cl.duoc.mastermartini.data.entity.UsuarioEntity
 
