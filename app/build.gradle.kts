@@ -64,4 +64,10 @@ dependencies {
     ksp("androidx.room:room-compiler:2.7.0")
     // DataStore: guarda preferencias pequeñas (sesión y accesibilidad)
     implementation("androidx.datastore:datastore-preferences:1.1.1")
+    // Retrofit: cliente HTTP para consumir APIs REST (microservicio propio y API externa)
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    // Convertidor Gson: transforma JSON en objetos Kotlin y viceversa
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    // Corrutinas: ejecutan las llamadas de red en segundo plano sin congelar la pantalla
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 }

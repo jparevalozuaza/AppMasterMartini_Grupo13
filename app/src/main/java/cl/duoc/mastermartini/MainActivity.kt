@@ -29,10 +29,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -126,76 +126,25 @@ class MainActivity : ComponentActivity() {
                         bottomBar = {
                             if (mostrarBarra) {
                                 NavigationBar {
-                                    NavigationBarItem(
-                                        selected = currentRoute == Screen.Home.route,
-                                        onClick = {
-                                            navController.navigate(Screen.Home.route) {
-                                                popUpTo(navController.graph.findStartDestination().id) {
-                                                    saveState = true
+                                    // Una sola definición para las 5 pestañas (antes eran 5 bloques casi idénticos)
+                                    seccionesBarra.forEach { seccion ->
+                                        NavigationBarItem(
+                                            selected = currentRoute == seccion.pantalla.route,
+                                            onClick = {
+                                                navController.navigate(seccion.pantalla.route) {
+                                                    // Inicio queda siempre como base del historial: así "atrás"
+                                                    // vuelve a Inicio y "Cerrar sesión" puede limpiar todo.
+                                                    popUpTo(Screen.Home.route) {
+                                                        saveState = true
+                                                    }
+                                                    launchSingleTop = true   // no abre dos copias de la misma pestaña
+                                                    restoreState = true      // recupera el estado al volver a la pestaña
                                                 }
-                                                launchSingleTop = true
-                                                restoreState = true
-                                            }
-                                        },
-                                        icon = { Icon(Icons.Filled.Home, contentDescription = "Inicio") },
-                                        label = { Text("Inicio") }
-                                    )
-                                    NavigationBarItem(
-                                        selected = currentRoute == Screen.Aprender.route,
-                                        onClick = {
-                                            navController.navigate(Screen.Aprender.route) {
-                                                popUpTo(navController.graph.findStartDestination().id) {
-                                                    saveState = true
-                                                }
-                                                launchSingleTop = true
-                                                restoreState = true
-                                            }
-                                        },
-                                        icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Aprender") },
-                                        label = { Text("Aprender") }
-                                    )
-                                    NavigationBarItem(
-                                        selected = currentRoute == Screen.Cursos.route,
-                                        onClick = {
-                                            navController.navigate(Screen.Cursos.route) {
-                                                popUpTo(navController.graph.findStartDestination().id) {
-                                                    saveState = true
-                                                }
-                                                launchSingleTop = true
-                                                restoreState = true
-                                            }
-                                        },
-                                        icon = { Icon(Icons.Filled.Info, contentDescription = "Cursos") },
-                                        label = { Text("Cursos") }
-                                    )
-                                    NavigationBarItem(
-                                        selected = currentRoute == Screen.Favoritos.route,
-                                        onClick = {
-                                            navController.navigate(Screen.Favoritos.route) {
-                                                popUpTo(navController.graph.findStartDestination().id) {
-                                                    saveState = true
-                                                }
-                                                launchSingleTop = true
-                                                restoreState = true
-                                            }
-                                        },
-                                        icon = { Icon(Icons.Filled.Favorite, contentDescription = "Favoritos") },
-                                        label = { Text("Favoritos") }
-                                    )
-                                    NavigationBarItem(
-                                        selected = currentRoute == Screen.Perfil.route,
-                                        onClick = {
-                                            navController.navigate(Screen.Perfil.route) {
-                                                popUpTo(navController.graph.findStartDestination().id) {
-                                                    saveState = true
-                                                }
-                                                launchSingleTop = true
-                                                restoreState = true
-                                            }
-                                        },
-                                        icon = { Icon(Icons.Filled.Person, contentDescription = "Perfil") },
-                                        label = { Text("Perfil") }
-                                    )
+                                            },
+                                            icon = { Icon(seccion.icono, contentDescription = seccion.etiqueta) },
+                                            label = { Text(seccion.etiqueta) }
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -315,3 +264,22 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+// ─────────────────────────────────────────────────────────────
+// PESTAÑAS DE LA BARRA INFERIOR
+// Cada pestaña tiene una pantalla de destino, un texto y un ícono.
+// Para agregar o quitar una pestaña basta con editar esta lista.
+// ─────────────────────────────────────────────────────────────
+private data class SeccionBarra(
+    val pantalla: Screen,
+    val etiqueta: String,
+    val icono: ImageVector
+)
+
+private val seccionesBarra = listOf(
+    SeccionBarra(Screen.Home, "Inicio", Icons.Filled.Home),
+    SeccionBarra(Screen.Aprender, "Aprender", Icons.AutoMirrored.Filled.List),
+    SeccionBarra(Screen.Cursos, "Cursos", Icons.Filled.Info),
+    SeccionBarra(Screen.Favoritos, "Favoritos", Icons.Filled.Favorite),
+    SeccionBarra(Screen.Perfil, "Perfil", Icons.Filled.Person)
+)

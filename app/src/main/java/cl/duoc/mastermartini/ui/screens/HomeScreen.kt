@@ -39,13 +39,12 @@ fun HomeScreen(viewModel: MainViewModel) {
                 .fillMaxSize()
         ) {
 
+            // Las tres variantes reciben el ViewModel para que sus botones puedan navegar
             when (windowSizeClass.widthSizeClass) {
-
                 WindowWidthSizeClass.Compact -> HomeScreenCompacta(viewModel)
-
-                WindowWidthSizeClass.Medium -> HomeScreenMediana(viewModel = null)
-
-                WindowWidthSizeClass.Expanded -> HomeScreenExpandida(viewModel)            }
+                WindowWidthSizeClass.Medium -> HomeScreenMediana(viewModel)
+                WindowWidthSizeClass.Expanded -> HomeScreenExpandida(viewModel)
+            }
         }
     }
 }

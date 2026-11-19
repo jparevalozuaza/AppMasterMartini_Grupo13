@@ -362,12 +362,7 @@ fun PerfilScreen(
                     ) {
                         Text("Cerrar sesión", fontWeight = FontWeight.Bold)
                     }
-                    Text(
-                        text = "Datos ficticios para demostración académica",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(bottom = 24.dp)
-                    )
+                    Spacer(modifier = Modifier.height(24.dp))   // margen inferior bajo el botón
                 }
             }
         }
