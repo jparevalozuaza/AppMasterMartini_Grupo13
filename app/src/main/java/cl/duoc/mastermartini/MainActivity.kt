@@ -54,6 +54,7 @@ import cl.duoc.mastermartini.ui.screens.HomeScreen
 import cl.duoc.mastermartini.ui.screens.LeccionScreen
 import cl.duoc.mastermartini.ui.screens.LoginScreen
 import cl.duoc.mastermartini.ui.screens.PerfilScreen
+import cl.duoc.mastermartini.ui.screens.PostScreen
 import cl.duoc.mastermartini.ui.screens.RecetasScreen
 import cl.duoc.mastermartini.ui.screens.RegistroScreen
 import cl.duoc.mastermartini.ui.theme.AppMasterMartini_Grupo13Theme
@@ -151,7 +152,7 @@ class MainActivity : ComponentActivity() {
                     ) { innerPadding ->
                         NavHost(
                             navController = navController,
-                            startDestination = Screen.Login.route,
+                            startDestination = Screen.Posts.route,   // Guía 14: la app parte en el listado de posts
                             modifier = Modifier.fillMaxSize().padding(innerPadding),
                             // Transiciones animadas, respetando la preferencia de reducir movimiento.
                             enterTransition = {
@@ -173,6 +174,16 @@ class MainActivity : ComponentActivity() {
                                         slideOutHorizontally(animationSpec = tween(300)) { ancho -> ancho / 4 }
                             }
                         ) {
+                            // Guía 14: listado de posts. El botón lleva al Login y quita
+                            // Posts del historial, para que "atrás" no regrese a la práctica.
+                            composable(Screen.Posts.route) {
+                                PostScreen(onIrAMartini = {
+                                    navController.navigate(Screen.Login.route) {
+                                        popUpTo(Screen.Posts.route) { inclusive = true }
+                                    }
+                                })
+                            }
+
                             // Acceso y registro.
                             composable(Screen.Login.route) {
                                 LoginScreen(authViewModel = authViewModel, mainViewModel = viewModel)

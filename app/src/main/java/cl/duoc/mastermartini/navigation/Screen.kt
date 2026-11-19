@@ -5,6 +5,12 @@ sealed class Screen(
     val titulo: String
 ) {
 
+    // Guía 14 (rama de práctica): listado de posts desde JSONPlaceholder
+    data object Posts : Screen(
+        route = "posts",
+        titulo = "Posts"
+    )
+
     // Pantallas de acceso (Integrante 1)
     data object Login : Screen(
         route = "login",
