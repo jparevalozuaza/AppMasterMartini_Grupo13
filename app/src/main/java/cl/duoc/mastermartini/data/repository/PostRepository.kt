@@ -16,4 +16,11 @@ class PostRepository(
 ) {
 
     suspend fun getPosts(): List<Post> = api.getPosts()
+
+    suspend fun createPost(post: Post): Post = api.createPost(post)
+
+    suspend fun updatePost(post: Post): Post = api.updatePost(post.id, post)
+
+    // Devuelve true si el servidor respondió con éxito (códigos 200 a 299)
+    suspend fun deletePost(id: Int): Boolean = api.deletePost(id).isSuccessful
 }
