@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -72,14 +71,7 @@ fun RegistroScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Column {
-                        Text("Crear cuenta", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.tertiary)
-                        Text(
-                            "Una sola pantalla · campos esenciales",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    Text("Crear cuenta", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.tertiary)
                 },
                 navigationIcon = {
                     IconButton(onClick = { mainViewModel.navigateBack() }) {
@@ -181,14 +173,7 @@ fun RegistroScreen(
                 },
                 cargando = estado.guardando
             )
-            Text(
-                text = "Al continuar aceptas usar datos ficticios de prueba.",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 24.dp)
-            )
+            Spacer(modifier = Modifier.height(24.dp))   // margen inferior bajo el botón
         }
     }
 }
