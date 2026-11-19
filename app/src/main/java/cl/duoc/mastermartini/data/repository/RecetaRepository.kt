@@ -1,29 +1,35 @@
 package cl.duoc.mastermartini.data.repository
 
-import cl.duoc.mastermartini.data.dao.RecetaDao
-import cl.duoc.mastermartini.data.entity.RecetaEntity
-import kotlinx.coroutines.flow.Flow
+import cl.duoc.mastermartini.model.Receta
 
-class RecetaRepository(
-    private val recetaDao: RecetaDao
-) {
+// ─────────────────────────────────────────────────────────────
+// CONTRATO DEL REPOSITORIO DE RECETAS
+// Una "interface" solo dice QUÉ se puede hacer, no CÓMO.
+// Hay dos formas de cumplirla:
+//   • RecetaRemoteRepository → usa el microservicio real (Retrofit)
+//   • RecetaFakeRepository   → usa datos simulados en memoria
+// El ViewModel solo conoce este contrato: no sabe (ni le importa) cuál de
+// las dos está usando. Por eso se pueden intercambiar sin tocar pantallas,
+// y en las pruebas (Bloque 5) se le puede entregar una versión falsa.
+//
+// Todas las funciones son "suspend": pueden tardar (red) y se ejecutan
+// dentro de una corrutina. Si algo falla, lanzan una excepción que el
+// ViewModel atrapa con try/catch.
+// ─────────────────────────────────────────────────────────────
+interface RecetaRepository {
 
-    fun obtenerTodas(): Flow<List<RecetaEntity>> {
-        return recetaDao.obtenerTodas()
-    }
+    // Todas las recetas
+    suspend fun obtenerRecetas(): List<Receta>
 
-    suspend fun obtenerPorId(id: Int): RecetaEntity? {
-        return recetaDao.obtenerPorId(id)
-    }
+    // Una receta por id, o null si no existe
+    suspend fun obtenerReceta(id: Int): Receta?
 
-    suspend fun contarPorTitulo(titulo: String): Int =
-        recetaDao.contarPorTitulo(titulo)
+    // Crea una receta (con id = 0) y devuelve la receta guardada, ya con su id
+    suspend fun crearReceta(receta: Receta): Receta
 
-    suspend fun insertar(receta: RecetaEntity) {
-        recetaDao.insertar(receta)
-    }
+    // Reemplaza una receta existente; devuelve null si ese id no existe
+    suspend fun actualizarReceta(receta: Receta): Receta?
 
-    suspend fun eliminar(receta: RecetaEntity) {
-        recetaDao.eliminar(receta)
-    }
+    // Elimina una receta; devuelve true si existía y se eliminó
+    suspend fun eliminarReceta(id: Int): Boolean
 }

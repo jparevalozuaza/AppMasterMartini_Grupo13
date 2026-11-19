@@ -69,5 +69,6 @@ dependencies {
     // Convertidor Gson: transforma JSON en objetos Kotlin y viceversa
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     // Corrutinas: ejecutan las llamadas de red en segundo plano sin congelar la pantalla
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    // (versión sugerida en la Guía 14; Retrofit y Gson ya usan la 2.11.0 de la guía)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
 }

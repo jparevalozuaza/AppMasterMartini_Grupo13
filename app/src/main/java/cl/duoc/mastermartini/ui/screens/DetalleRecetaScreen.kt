@@ -11,6 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import cl.duoc.mastermartini.ui.state.RecetaUiState
 import cl.duoc.mastermartini.viewmodel.RecetaViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,8 +34,9 @@ fun DetalleRecetaScreen(
     viewModel: RecetaViewModel,
     onVolver: () -> Unit
 ) {
-    val recetas by viewModel.recetas.collectAsState()
-    val receta = recetas.find { it.id == recetaId }
+    // La receta se busca en la lista que entrega el ViewModel
+    val estado by viewModel.estado.collectAsState()
+    val receta = (estado as? RecetaUiState.Exito)?.recetas?.find { it.id == recetaId }
 
     Scaffold(
         topBar = {
@@ -62,7 +65,28 @@ fun DetalleRecetaScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
-            if (receta != null) {
+            if (estado is RecetaUiState.Cargando) {
+
+                CircularProgressIndicator()
+                Text(
+                    text = "Cargando receta…",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+
+            } else if (estado is RecetaUiState.Error) {
+
+                Text(
+                    text = (estado as RecetaUiState.Error).mensaje,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Button(
+                    onClick = { viewModel.cargarRecetas() },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Reintentar")
+                }
+
+            } else if (receta != null) {
 
                 Text(
                     text = receta.titulo,

@@ -3,32 +3,40 @@ package cl.duoc.mastermartini.ui.screens
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import cl.duoc.mastermartini.model.Receta
 import cl.duoc.mastermartini.navigation.Screen
+import cl.duoc.mastermartini.ui.state.RecetaUiState
 import cl.duoc.mastermartini.viewmodel.RecetaViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,7 +45,9 @@ fun RecetasScreen(
     viewModel: RecetaViewModel,
     navController: NavController
 ) {
-    val recetas by viewModel.recetas.collectAsState()
+    // Estado que entrega el ViewModel: Cargando, Exito o Error
+    val estado by viewModel.estado.collectAsState()
+    val recetas = (estado as? RecetaUiState.Exito)?.recetas ?: emptyList()
 
     var textoBusqueda by remember { mutableStateOf("") }
     var categoriaSeleccionada by remember { mutableStateOf("Todas") }
@@ -103,60 +113,113 @@ fun RecetasScreen(
                 }
             }
 
-            if (recetas.isEmpty()) {
-                Text("Cargando recetas...")
-            } else if (recetasFiltradas.isEmpty()) {
-                Text(
-                    text = "No se encontraron recetas.",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(recetasFiltradas) { receta ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
+            // Lo que se muestra depende del estado.
+            // Como RecetaUiState es "sealed", el when debe cubrir los tres casos.
+            when (val e = estado) {
+
+                is RecetaUiState.Cargando -> MensajeCentrado {
+                    CircularProgressIndicator()
+                    Text("Cargando recetas…")
+                }
+
+                is RecetaUiState.Error -> MensajeCentrado {
+                    Text(
+                        text = e.mensaje,
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center
+                    )
+                    Button(onClick = { viewModel.cargarRecetas() }) {
+                        Text("Reintentar")
+                    }
+                }
+
+                is RecetaUiState.Exito -> when {
+                    recetas.isEmpty() -> MensajeCentrado {
+                        Text(
+                            text = "Aún no hay recetas.",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+
+                    recetasFiltradas.isEmpty() -> Text(
+                        text = "No se encontraron recetas.",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+
+                    else -> LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        // "key" ayuda a Compose a reconocer cada tarjeta cuando la lista cambia
+                        items(recetasFiltradas, key = { it.id }) { receta ->
+                            TarjetaReceta(
+                                receta = receta,
+                                onClick = {
                                     navController.navigate(
-                                        Screen.DetalleReceta.crearRuta(
-                                            receta.id
-                                        )
+                                        Screen.DetalleReceta.crearRuta(receta.id)
                                     )
                                 }
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(16.dp),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Text(
-                                    text = receta.categoria,
-                                    style = MaterialTheme.typography.labelMedium
-                                )
-
-                                Text(
-                                    text = receta.titulo,
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-
-                                Text(
-                                    text = receta.descripcion,
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-
-                                Text(
-                                    text = "Preparación: ${receta.tiempoPreparacion} minutos",
-                                    style = MaterialTheme.typography.bodySmall
-                                )
-                            }
+                            )
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+// Tarjeta de una receta en la lista
+@Composable
+private fun TarjetaReceta(receta: Receta, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = receta.categoria,
+                style = MaterialTheme.typography.labelMedium
+            )
+
+            Text(
+                text = receta.titulo,
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            Text(
+                text = receta.descripcion,
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            Text(
+                text = "Preparación: ${receta.tiempoPreparacion} minutos",
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+    }
+}
+
+// Contenido centrado en el espacio libre (carga, error o lista vacía).
+// Es una extensión de ColumnScope para poder usar weight(1f) y ocupar el resto de la pantalla.
+@Composable
+private fun ColumnScope.MensajeCentrado(contenido: @Composable () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            contenido()
         }
     }
 }
