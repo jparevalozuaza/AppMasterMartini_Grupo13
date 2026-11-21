@@ -81,6 +81,9 @@ class MainActivity : ComponentActivity() {
                 val textoGrande by perfilViewModel.textoGrande.collectAsState()
                 val reducirMovimiento by perfilViewModel.reducirMovimiento.collectAsState()
 
+                // Rol de la sesión: solo un administrador ve crear, editar y eliminar recetas
+                val esAdministrador by perfilViewModel.esAdministrador.collectAsState()
+
                 // Aplica el aumento de tamaño de texto a todas las pantallas.
                 val densidadActual = LocalDensity.current
                 val densidadApp = Density(
@@ -246,7 +249,11 @@ class MainActivity : ComponentActivity() {
 
                             // Recetas: lista, detalle y formulario (comparten recetaViewModel).
                             composable(Screen.Recetas.route) {
-                                RecetasScreen(viewModel = recetaViewModel, navController = navController)
+                                RecetasScreen(
+                                    viewModel = recetaViewModel,
+                                    navController = navController,
+                                    esAdministrador = esAdministrador
+                                )
                             }
                             composable(
                                 route = Screen.DetalleReceta.route,
@@ -260,7 +267,8 @@ class MainActivity : ComponentActivity() {
                                     onEditar = { id ->
                                         navController.navigate(Screen.FormularioReceta.crearRuta(id))
                                     },
-                                    onEliminada = { navController.popBackStack() }
+                                    onEliminada = { navController.popBackStack() },
+                                    esAdministrador = esAdministrador
                                 )
                             }
                             composable(

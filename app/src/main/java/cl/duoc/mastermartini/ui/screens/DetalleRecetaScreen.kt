@@ -41,7 +41,8 @@ fun DetalleRecetaScreen(
     viewModel: RecetaViewModel,
     onVolver: () -> Unit,
     onEditar: (Int) -> Unit,        // abre el formulario con esta receta
-    onEliminada: () -> Unit         // vuelve a la lista después de eliminar
+    onEliminada: () -> Unit,        // vuelve a la lista después de eliminar
+    esAdministrador: Boolean        // true: muestra Editar y Eliminar
 ) {
     // La receta se busca en la lista que entrega el ViewModel
     val estado by viewModel.estado.collectAsState()
@@ -140,22 +141,24 @@ fun DetalleRecetaScreen(
                     style = MaterialTheme.typography.bodyLarge
                 )
 
-                // Acciones del CRUD sobre esta receta
-                OutlinedButton(
-                    onClick = { onEditar(receta.id) },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Editar receta")
-                }
+                // Acciones del CRUD sobre esta receta: solo para administradores
+                if (esAdministrador) {
+                    OutlinedButton(
+                        onClick = { onEditar(receta.id) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Editar receta")
+                    }
 
-                OutlinedButton(
-                    onClick = { confirmarEliminacion = true },
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Eliminar receta")
+                    OutlinedButton(
+                        onClick = { confirmarEliminacion = true },
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Eliminar receta")
+                    }
                 }
 
             } else {

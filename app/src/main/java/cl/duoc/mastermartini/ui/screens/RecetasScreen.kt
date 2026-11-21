@@ -51,7 +51,8 @@ import cl.duoc.mastermartini.viewmodel.RecetaViewModel
 @Composable
 fun RecetasScreen(
     viewModel: RecetaViewModel,
-    navController: NavController
+    navController: NavController,
+    esAdministrador: Boolean        // true: muestra el botón "+" para crear recetas
 ) {
     // Estado que entrega el ViewModel: Cargando, Exito o Error
     val estado by viewModel.estado.collectAsState()
@@ -99,12 +100,15 @@ fun RecetasScreen(
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        // Botón "+" para crear una receta nueva (abre el formulario vacío)
+        // Botón "+" para crear una receta nueva (abre el formulario vacío).
+        // Solo lo ve un administrador; un usuario común solo consulta.
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { navController.navigate(Screen.FormularioReceta.crearRuta(0)) }
-            ) {
-                Icon(Icons.Filled.Add, contentDescription = "Crear receta")
+            if (esAdministrador) {
+                FloatingActionButton(
+                    onClick = { navController.navigate(Screen.FormularioReceta.crearRuta(0)) }
+                ) {
+                    Icon(Icons.Filled.Add, contentDescription = "Crear receta")
+                }
             }
         }
     ) { innerPadding ->
