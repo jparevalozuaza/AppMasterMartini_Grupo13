@@ -54,6 +54,7 @@ import cl.duoc.mastermartini.ui.screens.HomeScreen
 import cl.duoc.mastermartini.ui.screens.LeccionScreen
 import cl.duoc.mastermartini.ui.screens.LoginScreen
 import cl.duoc.mastermartini.ui.screens.PerfilScreen
+import cl.duoc.mastermartini.ui.screens.RecetaFormScreen
 import cl.duoc.mastermartini.ui.screens.RecetasScreen
 import cl.duoc.mastermartini.ui.screens.RegistroScreen
 import cl.duoc.mastermartini.ui.theme.AppMasterMartini_Grupo13Theme
@@ -72,6 +73,9 @@ class MainActivity : ComponentActivity() {
                 val viewModel: MainViewModel = viewModel()
                 val authViewModel: AuthViewModel = viewModel()
                 val perfilViewModel: PerfilViewModel = viewModel()
+                // Un solo ViewModel de recetas para la lista, el detalle y el formulario:
+                // así, al crear, editar o eliminar, todas las pantallas ven los mismos datos.
+                val recetaViewModel: RecetaViewModel = viewModel()
 
                 // Preferencias de accesibilidad guardadas en DataStore.
                 val textoGrande by perfilViewModel.textoGrande.collectAsState()
@@ -240,9 +244,8 @@ class MainActivity : ComponentActivity() {
                                 DetalleScreen(contenido = contenido, viewModel = viewModel)
                             }
 
-                            // Recetas y detalle de receta.
+                            // Recetas: lista, detalle y formulario (comparten recetaViewModel).
                             composable(Screen.Recetas.route) {
-                                val recetaViewModel: RecetaViewModel = viewModel()
                                 RecetasScreen(viewModel = recetaViewModel, navController = navController)
                             }
                             composable(
@@ -250,8 +253,18 @@ class MainActivity : ComponentActivity() {
                                 arguments = listOf(navArgument("recetaId") { type = NavType.IntType })
                             ) { backStackEntry ->
                                 val recetaId = backStackEntry.arguments?.getInt("recetaId") ?: 0
-                                val recetaViewModel: RecetaViewModel = viewModel()
                                 DetalleRecetaScreen(
+                                    recetaId = recetaId,
+                                    viewModel = recetaViewModel,
+                                    onVolver = { navController.popBackStack() }
+                                )
+                            }
+                            composable(
+                                route = Screen.FormularioReceta.route,
+                                arguments = listOf(navArgument("recetaId") { type = NavType.IntType })
+                            ) { backStackEntry ->
+                                val recetaId = backStackEntry.arguments?.getInt("recetaId") ?: 0
+                                RecetaFormScreen(
                                     recetaId = recetaId,
                                     viewModel = recetaViewModel,
                                     onVolver = { navController.popBackStack() }
