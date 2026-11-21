@@ -256,7 +256,11 @@ class MainActivity : ComponentActivity() {
                                 DetalleRecetaScreen(
                                     recetaId = recetaId,
                                     viewModel = recetaViewModel,
-                                    onVolver = { navController.popBackStack() }
+                                    onVolver = { navController.popBackStack() },
+                                    onEditar = { id ->
+                                        navController.navigate(Screen.FormularioReceta.crearRuta(id))
+                                    },
+                                    onEliminada = { navController.popBackStack() }
                                 )
                             }
                             composable(
