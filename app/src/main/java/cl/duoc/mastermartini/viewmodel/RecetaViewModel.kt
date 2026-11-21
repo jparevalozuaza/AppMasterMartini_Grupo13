@@ -72,6 +72,12 @@ class RecetaViewModel(
         }
     }
 
+    // Al entrar a Recetas: si la última carga falló (por ejemplo, el servidor
+    // estaba apagado al abrir la app), se intenta de nuevo automáticamente
+    fun cargarSiHayError() {
+        if (_estado.value is RecetaUiState.Error) cargarRecetas()
+    }
+
     // ===================== FORMULARIO (crear y editar) =====================
     // Estado del formulario: lo que se escribió en cada campo y sus errores
     private val _formulario = MutableStateFlow(RecetaFormUiState())
