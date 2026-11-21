@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 // ─────────────────────────────────────────────────────────────
 
 // MartiniTextField: campo de texto con ícono, borde rojo y mensaje de error animado.
+// Con unaLinea = false acepta textos largos (por ejemplo, ingredientes o preparación).
 @Composable
 fun MartiniTextField(
     valor: String,
@@ -66,7 +67,9 @@ fun MartiniTextField(
     icono: ImageVector? = null,
     esClave: Boolean = false,
     tipoTeclado: KeyboardType = KeyboardType.Text,
-    imeAction: ImeAction = ImeAction.Next
+    imeAction: ImeAction = ImeAction.Next,
+    unaLinea: Boolean = true,
+    lineasMinimas: Int = 1
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         OutlinedTextField(
@@ -87,7 +90,8 @@ fun MartiniTextField(
                 }
             } else null,
             isError = error != null,
-            singleLine = true,
+            singleLine = unaLinea,
+            minLines = lineasMinimas,
             visualTransformation = if (esClave) PasswordVisualTransformation() else VisualTransformation.None,
             keyboardOptions = KeyboardOptions(
                 keyboardType = if (esClave) KeyboardType.Password else tipoTeclado,

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,12 +19,19 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,11 +51,29 @@ import cl.duoc.mastermartini.viewmodel.RecetaViewModel
 @Composable
 fun RecetasScreen(
     viewModel: RecetaViewModel,
-    navController: NavController
+    navController: NavController,
+    esAdministrador: Boolean        // true: muestra el botón "+" para crear recetas
 ) {
     // Estado que entrega el ViewModel: Cargando, Exito o Error
     val estado by viewModel.estado.collectAsState()
     val recetas = (estado as? RecetaUiState.Exito)?.recetas ?: emptyList()
+
+    // Mensaje de confirmación ("Receta creada", etc.) que deja el ViewModel
+    val mensaje by viewModel.mensaje.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Cada vez que llega un mensaje nuevo se muestra en el Snackbar y luego se "consume"
+    LaunchedEffect(mensaje) {
+        mensaje?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.consumirMensaje()
+        }
+    }
+
+    // Al entrar a la pantalla: si la carga anterior falló, se reintenta sola
+    LaunchedEffect(Unit) {
+        viewModel.cargarSiHayError()
+    }
 
     var textoBusqueda by remember { mutableStateOf("") }
     var categoriaSeleccionada by remember { mutableStateOf("Todas") }
@@ -72,6 +98,18 @@ fun RecetasScreen(
             TopAppBar(
                 title = { Text("Recetas") }
             )
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        // Botón "+" para crear una receta nueva (abre el formulario vacío).
+        // Solo lo ve un administrador; un usuario común solo consulta.
+        floatingActionButton = {
+            if (esAdministrador) {
+                FloatingActionButton(
+                    onClick = { navController.navigate(Screen.FormularioReceta.crearRuta(0)) }
+                ) {
+                    Icon(Icons.Filled.Add, contentDescription = "Crear receta")
+                }
+            }
         }
     ) { innerPadding ->
 
@@ -150,7 +188,9 @@ fun RecetasScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        // Espacio al final para que el botón "+" no tape la última receta
+                        contentPadding = PaddingValues(bottom = 88.dp)
                     ) {
                         // "key" ayuda a Compose a reconocer cada tarjeta cuando la lista cambia
                         items(recetasFiltradas, key = { it.id }) { receta ->
