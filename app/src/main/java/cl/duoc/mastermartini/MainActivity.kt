@@ -55,12 +55,14 @@ import cl.duoc.mastermartini.ui.screens.LeccionScreen
 import cl.duoc.mastermartini.ui.screens.LoginScreen
 import cl.duoc.mastermartini.ui.screens.PerfilScreen
 import cl.duoc.mastermartini.ui.screens.RecetaFormScreen
+import cl.duoc.mastermartini.ui.screens.RecetasExternasScreen
 import cl.duoc.mastermartini.ui.screens.RecetasScreen
 import cl.duoc.mastermartini.ui.screens.RegistroScreen
 import cl.duoc.mastermartini.ui.theme.AppMasterMartini_Grupo13Theme
 import cl.duoc.mastermartini.viewmodel.AuthViewModel
 import cl.duoc.mastermartini.viewmodel.MainViewModel
 import cl.duoc.mastermartini.viewmodel.PerfilViewModel
+import cl.duoc.mastermartini.viewmodel.RecetaExternaViewModel
 import cl.duoc.mastermartini.viewmodel.RecetaViewModel
 
 class MainActivity : ComponentActivity() {
@@ -269,6 +271,16 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onEliminada = { navController.popBackStack() },
                                     esAdministrador = esAdministrador
+                                )
+                            }
+                            // Recetas del mundo (API externa): su ViewModel vive solo mientras
+                            // la pantalla está abierta, porque no comparte datos con otras pantallas.
+                            composable(Screen.RecetasExternas.route) {
+                                val recetaExternaViewModel: RecetaExternaViewModel = viewModel()
+                                RecetasExternasScreen(
+                                    viewModel = recetaExternaViewModel,
+                                    esAdministrador = esAdministrador,
+                                    onVolver = { navController.popBackStack() }
                                 )
                             }
                             composable(

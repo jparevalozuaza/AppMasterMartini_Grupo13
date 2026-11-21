@@ -27,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -96,7 +97,13 @@ fun RecetasScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Recetas") }
+                title = { Text("Recetas") },
+                // Acceso a la API externa: recetas del mundo (DummyJSON)
+                actions = {
+                    TextButton(onClick = { navController.navigate(Screen.RecetasExternas.route) }) {
+                        Text("Del mundo")
+                    }
+                }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
