@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,20 +20,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cl.duoc.mastermartini.model.Leccion
+import cl.duoc.mastermartini.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LeccionScreen(
     leccion: Leccion,
+    viewModel: MainViewModel,
     onVolver: () -> Unit
 ) {
+    val completada = viewModel.progreso.value.contains(leccion.id)
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text("Lección")
-                },
+                title = { Text("Lección") },
                 navigationIcon = {
                     IconButton(onClick = onVolver) {
                         Icon(
@@ -44,7 +46,6 @@ fun LeccionScreen(
             )
         }
     ) { innerPadding ->
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -53,7 +54,6 @@ fun LeccionScreen(
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-
             Text(
                 text = leccion.titulo,
                 style = MaterialTheme.typography.headlineSmall
@@ -74,6 +74,35 @@ fun LeccionScreen(
                 text = leccion.contenido,
                 style = MaterialTheme.typography.bodyLarge
             )
+
+            Text(
+                text = if (completada) {
+                    "Has completado esta lección."
+                } else {
+                    "Aún tienes esta lección pendiente."
+                },
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (completada) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                }
+            )
+
+            Button(
+                onClick = {
+                    viewModel.alternarProgreso(leccion.id)
+                },
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Text(
+                    text = if (completada) {
+                        "Marcar como pendiente"
+                    } else {
+                        "Marcar como completada"
+                    }
+                )
+            }
         }
     }
 }

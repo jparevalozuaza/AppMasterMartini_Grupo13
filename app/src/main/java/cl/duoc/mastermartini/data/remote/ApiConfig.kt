@@ -18,7 +18,7 @@ object ApiConfig {
     // Microservicio de recetas (Spring Boot, puerto 8080, rutas /api/recetas).
     // 10.0.2.2 es la dirección con la que el EMULADOR llega al computador donde corre el backend.
     // Retrofit exige que la URL base termine en "/".
-    const val BACKEND_BASE_URL = "http://10.0.2.2:8080/"
+    const val BACKEND_BASE_URL = "http://127.0.0.1:8080/"
 
     // API externa pública DummyJSON (recetas del mundo, en inglés). Va por HTTPS.
     // Acepta GET, POST, PUT y DELETE, pero SIMULA los cambios: responde con éxito
@@ -32,5 +32,5 @@ object ApiConfig {
     //   true  → datos simulados en memoria (no necesita el servidor encendido)
     //   false → microservicio real (requiere Docker + backend en ejecución)
     // Para la entrega final debe quedar en false.
-    const val USAR_DATOS_SIMULADOS = true
+    const val USAR_DATOS_SIMULADOS = false
 }

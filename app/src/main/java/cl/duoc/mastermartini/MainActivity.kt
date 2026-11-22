@@ -210,6 +210,7 @@ class MainActivity : ComponentActivity() {
                                 if (curso != null) {
                                     DetalleCursoScreen(
                                         curso = curso,
+                                        viewModel = viewModel,
                                         onAbrirLeccion = { leccionId ->
                                             navController.navigate(Screen.Leccion.crearRuta(leccionId))
                                         },
@@ -232,6 +233,7 @@ class MainActivity : ComponentActivity() {
                                 if (leccion != null) {
                                     LeccionScreen(
                                         leccion = leccion,
+                                        viewModel = viewModel,
                                         onVolver = { navController.popBackStack() }
                                     )
                                 } else {
