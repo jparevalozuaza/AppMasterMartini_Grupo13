@@ -8,6 +8,9 @@ package cl.duoc.mastermartini.data.remote
 // Módulos que usarán el backend propio (microservicio de recetas):
 //   RecetasScreen y DetalleRecetaScreen → RecetaViewModel → RecetaRepository
 //   (versión remota: RecetaRemoteRepository → RecetaApiService → RetrofitInstance).
+// API externa (DummyJSON Recipes): pantalla "Recetas del mundo"
+//   RecetasExternasScreen → RecetaExternaViewModel → RecetaExternaRepository
+//   → RecetaExternaApiService → RetrofitInstance.
 // El resto de la app (usuarios, perfil, favoritos, progreso) sigue siendo local.
 // ─────────────────────────────────────────────────────────────
 object ApiConfig {
@@ -16,6 +19,11 @@ object ApiConfig {
     // 10.0.2.2 es la dirección con la que el EMULADOR llega al computador donde corre el backend.
     // Retrofit exige que la URL base termine en "/".
     const val BACKEND_BASE_URL = "http://127.0.0.1:8080/"
+
+    // API externa pública DummyJSON (recetas del mundo, en inglés). Va por HTTPS.
+    // Acepta GET, POST, PUT y DELETE, pero SIMULA los cambios: responde con éxito
+    // y devuelve la receta, sin guardarla de verdad en su servidor.
+    const val EXTERNA_BASE_URL = "https://dummyjson.com/"
 
     // Tiempo máximo de espera de una respuesta, en segundos.
     const val TIEMPO_ESPERA_SEGUNDOS = 15L

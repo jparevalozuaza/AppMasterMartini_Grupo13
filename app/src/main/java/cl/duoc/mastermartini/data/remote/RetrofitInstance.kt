@@ -33,4 +33,15 @@ object RetrofitInstance {
             .build()
             .create(RecetaApiService::class.java)                 // Retrofit implementa la interfaz
     }
+
+    // Servicio de la API externa DummyJSON (otra URL base, mismo cliente HTTP).
+    // Cada servidor necesita su propio Retrofit porque la URL base es distinta.
+    val recetaExternaApi: RecetaExternaApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(ApiConfig.EXTERNA_BASE_URL)                  // https://dummyjson.com/
+            .client(clienteHttp)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(RecetaExternaApiService::class.java)
+    }
 }

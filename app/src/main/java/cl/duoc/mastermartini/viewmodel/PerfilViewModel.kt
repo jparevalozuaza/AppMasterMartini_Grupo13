@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import cl.duoc.mastermartini.data.database.AppDatabase
 import cl.duoc.mastermartini.data.repository.PreferenciasRepository
+import cl.duoc.mastermartini.utils.Roles
 import cl.duoc.mastermartini.data.repository.UsuarioRepository
 import cl.duoc.mastermartini.ui.state.PerfilUiState
 import cl.duoc.mastermartini.utils.validarNombre
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -44,6 +46,13 @@ class PerfilViewModel(application: Application) : AndroidViewModel(application) 
         preferencias.reducirMovimiento.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
     val subtitulos: StateFlow<Boolean> =
         preferencias.subtitulos.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+
+    // Rol de la sesión actual: true si el correo con que se ingresó es de un administrador.
+    // Se recalcula solo al iniciar o cerrar sesión, porque emailSesion es un Flow.
+    val esAdministrador: StateFlow<Boolean> =
+        preferencias.emailSesion
+            .map { email -> Roles.esAdministrador(email) }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
     // Carga el usuario de la sesión actual (correo guardado en DataStore → datos en Room)
     fun cargarPerfil() {

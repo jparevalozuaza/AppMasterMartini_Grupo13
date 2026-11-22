@@ -75,6 +75,22 @@ sealed class Screen(
         }
     }
 
+    // Recetas del mundo: datos de la API externa DummyJSON
+    data object RecetasExternas : Screen(
+        route = "recetasExternas",
+        titulo = "Recetas del mundo"
+    )
+
+    // Formulario de recetas: recetaId = 0 crea una receta nueva; otro valor edita esa receta
+    data object FormularioReceta : Screen(
+        route = "formularioReceta/{recetaId}",
+        titulo = "Formulario de receta"
+    ) {
+        fun crearRuta(recetaId: Int = 0): String {
+            return "formularioReceta/$recetaId"
+        }
+    }
+
     data object Perfil : Screen(
         route = "perfil",
         titulo = "Perfil"

@@ -54,12 +54,15 @@ import cl.duoc.mastermartini.ui.screens.HomeScreen
 import cl.duoc.mastermartini.ui.screens.LeccionScreen
 import cl.duoc.mastermartini.ui.screens.LoginScreen
 import cl.duoc.mastermartini.ui.screens.PerfilScreen
+import cl.duoc.mastermartini.ui.screens.RecetaFormScreen
+import cl.duoc.mastermartini.ui.screens.RecetasExternasScreen
 import cl.duoc.mastermartini.ui.screens.RecetasScreen
 import cl.duoc.mastermartini.ui.screens.RegistroScreen
 import cl.duoc.mastermartini.ui.theme.AppMasterMartini_Grupo13Theme
 import cl.duoc.mastermartini.viewmodel.AuthViewModel
 import cl.duoc.mastermartini.viewmodel.MainViewModel
 import cl.duoc.mastermartini.viewmodel.PerfilViewModel
+import cl.duoc.mastermartini.viewmodel.RecetaExternaViewModel
 import cl.duoc.mastermartini.viewmodel.RecetaViewModel
 
 class MainActivity : ComponentActivity() {
@@ -72,10 +75,16 @@ class MainActivity : ComponentActivity() {
                 val viewModel: MainViewModel = viewModel()
                 val authViewModel: AuthViewModel = viewModel()
                 val perfilViewModel: PerfilViewModel = viewModel()
+                // Un solo ViewModel de recetas para la lista, el detalle y el formulario:
+                // así, al crear, editar o eliminar, todas las pantallas ven los mismos datos.
+                val recetaViewModel: RecetaViewModel = viewModel()
 
                 // Preferencias de accesibilidad guardadas en DataStore.
                 val textoGrande by perfilViewModel.textoGrande.collectAsState()
                 val reducirMovimiento by perfilViewModel.reducirMovimiento.collectAsState()
+
+                // Rol de la sesión: solo un administrador ve crear, editar y eliminar recetas
+                val esAdministrador by perfilViewModel.esAdministrador.collectAsState()
 
                 // Aplica el aumento de tamaño de texto a todas las pantallas.
                 val densidadActual = LocalDensity.current
@@ -240,18 +249,46 @@ class MainActivity : ComponentActivity() {
                                 DetalleScreen(contenido = contenido, viewModel = viewModel)
                             }
 
-                            // Recetas y detalle de receta.
+                            // Recetas: lista, detalle y formulario (comparten recetaViewModel).
                             composable(Screen.Recetas.route) {
-                                val recetaViewModel: RecetaViewModel = viewModel()
-                                RecetasScreen(viewModel = recetaViewModel, navController = navController)
+                                RecetasScreen(
+                                    viewModel = recetaViewModel,
+                                    navController = navController,
+                                    esAdministrador = esAdministrador
+                                )
                             }
                             composable(
                                 route = Screen.DetalleReceta.route,
                                 arguments = listOf(navArgument("recetaId") { type = NavType.IntType })
                             ) { backStackEntry ->
                                 val recetaId = backStackEntry.arguments?.getInt("recetaId") ?: 0
-                                val recetaViewModel: RecetaViewModel = viewModel()
                                 DetalleRecetaScreen(
+                                    recetaId = recetaId,
+                                    viewModel = recetaViewModel,
+                                    onVolver = { navController.popBackStack() },
+                                    onEditar = { id ->
+                                        navController.navigate(Screen.FormularioReceta.crearRuta(id))
+                                    },
+                                    onEliminada = { navController.popBackStack() },
+                                    esAdministrador = esAdministrador
+                                )
+                            }
+                            // Recetas del mundo (API externa): su ViewModel vive solo mientras
+                            // la pantalla está abierta, porque no comparte datos con otras pantallas.
+                            composable(Screen.RecetasExternas.route) {
+                                val recetaExternaViewModel: RecetaExternaViewModel = viewModel()
+                                RecetasExternasScreen(
+                                    viewModel = recetaExternaViewModel,
+                                    esAdministrador = esAdministrador,
+                                    onVolver = { navController.popBackStack() }
+                                )
+                            }
+                            composable(
+                                route = Screen.FormularioReceta.route,
+                                arguments = listOf(navArgument("recetaId") { type = NavType.IntType })
+                            ) { backStackEntry ->
+                                val recetaId = backStackEntry.arguments?.getInt("recetaId") ?: 0
+                                RecetaFormScreen(
                                     recetaId = recetaId,
                                     viewModel = recetaViewModel,
                                     onVolver = { navController.popBackStack() }
