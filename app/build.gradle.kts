@@ -21,6 +21,11 @@ android {
     }
 
     buildTypes {
+        // Cobertura de las pruebas unitarias (JaCoCo integrado en Android Gradle Plugin).
+        // Se genera con: gradlew createDebugUnitTestCoverageReport
+        debug {
+            enableUnitTestCoverage = true
+        }
         release {
             optimization {
                 enable = false
@@ -71,4 +76,24 @@ dependencies {
     // Corrutinas: ejecutan las llamadas de red en segundo plano sin congelar la pantalla
     // (versión sugerida en la Guía 14; Retrofit y Gson ya usan la 2.11.0 de la guía)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+
+    // ───────────── PRUEBAS UNITARIAS (Guía 15) ─────────────
+    // Kotest: estilo de pruebas StringSpec y comparaciones legibles (shouldBe…)
+    testImplementation("io.kotest:kotest-runner-junit5:5.8.0")
+    testImplementation("io.kotest:kotest-assertions-core:5.8.0")
+    // JUnit 5: el motor que ejecuta las pruebas
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+    // Gradle 9 exige declarar el lanzador de JUnit 5 de forma explícita
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.10.0")
+    // MockK: crea objetos simulados (mocks) del repositorio y de la API
+    testImplementation("io.mockk:mockk:1.13.10")
+    // Corrutinas en pruebas: reemplaza el hilo principal y ejecuta sin esperas reales
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
+    // Las pruebas de interfaz (Compose UI Test) ya estaban configuradas arriba con el BOM:
+    // androidTestImplementation(ui-test-junit4) y debugImplementation(ui-test-manifest)
+}
+
+// Obligatorio para usar JUnit 5 (Guía 15)
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
 }
