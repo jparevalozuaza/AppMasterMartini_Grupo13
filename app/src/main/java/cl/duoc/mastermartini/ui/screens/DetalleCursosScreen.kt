@@ -22,21 +22,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cl.duoc.mastermartini.model.Curso
+import cl.duoc.mastermartini.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetalleCursoScreen(
     curso: Curso,
+    viewModel: MainViewModel,
     onAbrirLeccion: (Int) -> Unit,
     onVolver: () -> Unit
 ) {
+    val progreso = viewModel.progreso.value
+    val leccionesCompletadas = curso.lecciones.count { it.id in progreso }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(curso.titulo)
-                },
+                title = { Text(curso.titulo) },
                 navigationIcon = {
                     IconButton(onClick = onVolver) {
                         Icon(
@@ -48,7 +50,6 @@ fun DetalleCursoScreen(
             )
         }
     ) { innerPadding ->
-
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -56,7 +57,6 @@ fun DetalleCursoScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-
             item {
                 Text(
                     text = curso.categoria,
@@ -82,12 +82,14 @@ fun DetalleCursoScreen(
                 )
 
                 Text(
-                    text = "${curso.lecciones.size} lecciones disponibles",
-                    style = MaterialTheme.typography.bodySmall
+                    text = "$leccionesCompletadas de ${curso.lecciones.size} lecciones completadas",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
 
             items(curso.lecciones) { leccion ->
+                val completada = leccion.id in progreso
 
                 Card(
                     modifier = Modifier
@@ -100,7 +102,6 @@ fun DetalleCursoScreen(
                         modifier = Modifier.padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-
                         Text(
                             text = "Lección ${leccion.id}",
                             style = MaterialTheme.typography.labelMedium,
@@ -115,6 +116,20 @@ fun DetalleCursoScreen(
                         Text(
                             text = leccion.descripcion,
                             style = MaterialTheme.typography.bodyMedium
+                        )
+
+                        Text(
+                            text = if (completada) {
+                                "✓ Completada"
+                            } else {
+                                "Pendiente"
+                            },
+                            style = MaterialTheme.typography.labelLarge,
+                            color = if (completada) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            }
                         )
 
                         Text(
