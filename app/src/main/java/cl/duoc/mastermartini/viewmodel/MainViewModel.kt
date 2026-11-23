@@ -16,20 +16,19 @@ import kotlinx.coroutines.launch
 import cl.duoc.mastermartini.data.repository.ProgresoRepository
 
 // ViewModel: administra el estado y las acciones de las pantallas.
-class MainViewModel(application: Application) : AndroidViewModel(application) {
-
+// Los repositorios de favoritos y progreso (Room) llegan por el constructor
+// con un valor por defecto: la app usa los reales y las pruebas unitarias
+// entregan repositorios simulados. @JvmOverloads mantiene el constructor
+// con solo (Application) que Android usa en viewModel().
+class MainViewModel @JvmOverloads constructor(
+    application: Application,
     // Repositorio que permite guardar y consultar favoritos con Room.
-    private val favoritoDao =
-        AppDatabase.getDatabase(application).favoritoDao()
-
-    private val favoritoRepository =
-        FavoritoRepository(favoritoDao)
-
-    private val progresoDao =
-        AppDatabase.getDatabase(application).progresoDao()
-
-    private val progresoRepository =
-        ProgresoRepository(progresoDao)
+    private val favoritoRepository: FavoritoRepository =
+        FavoritoRepository(AppDatabase.getDatabase(application).favoritoDao()),
+    // Repositorio que guarda las lecciones completadas con Room.
+    private val progresoRepository: ProgresoRepository =
+        ProgresoRepository(AppDatabase.getDatabase(application).progresoDao())
+) : AndroidViewModel(application) {
 
     private val _progreso =
         mutableStateOf<Set<Int>>(emptySet())
