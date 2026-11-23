@@ -29,12 +29,20 @@ import kotlinx.coroutines.launch
 // AUTHVIEWMODEL: lógica de Login y Registro (guía sección 8.2)
 // Flujo: evento de la UI → ViewModel → validación/repositorio → nuevo UiState
 // AndroidViewModel = ViewModel que recibe "application" para crear Room y DataStore.
+//
+// INYECCIÓN DE DEPENDENCIAS (mismo esquema que RecetaViewModel):
+// los repositorios llegan por el constructor y tienen un valor por defecto.
+//   - La app usa los valores por defecto: Room y DataStore reales.
+//   - Las pruebas unitarias entregan repositorios simulados (mocks de MockK).
+// @JvmOverloads crea también el constructor con solo (Application),
+// que es el que Android usa para fabricar el ViewModel con viewModel().
 // ─────────────────────────────────────────────────────────────
-class AuthViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val usuarioRepository =
-        UsuarioRepository(AppDatabase.getDatabase(application).usuarioDao())
-    private val preferencias = PreferenciasRepository(application)
+class AuthViewModel @JvmOverloads constructor(
+    application: Application,
+    private val usuarioRepository: UsuarioRepository =
+        UsuarioRepository(AppDatabase.getDatabase(application).usuarioDao()),
+    private val preferencias: PreferenciasRepository = PreferenciasRepository(application)
+) : AndroidViewModel(application) {
 
     // Estado del Login
     private val _login = MutableStateFlow(LoginUiState())

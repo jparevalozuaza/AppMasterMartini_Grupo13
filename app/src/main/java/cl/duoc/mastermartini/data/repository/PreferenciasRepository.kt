@@ -16,8 +16,15 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 // ─────────────────────────────────────────────────────────────
 // PREFERENCIAS CON DATASTORE (guía sección 9.1)
 // Datos pequeños tipo "clave = valor": sesión y accesibilidad.
+//
+// INYECCIÓN DE DEPENDENCIAS: el repositorio recibe el "almacén" DataStore.
+//   - La app usa el constructor con Context (el archivo real de la app).
+//   - Las pruebas unitarias entregan un DataStore en memoria, sin archivos.
 // ─────────────────────────────────────────────────────────────
-class PreferenciasRepository(private val context: Context) {
+class PreferenciasRepository(private val almacen: DataStore<Preferences>) {
+
+    // Constructor que usa la app: toma el archivo DataStore único de la aplicación
+    constructor(context: Context) : this(context.dataStore)
 
     private object Claves {
         val EMAIL_SESION = stringPreferencesKey("email_sesion")
@@ -27,28 +34,28 @@ class PreferenciasRepository(private val context: Context) {
     }
 
     // Flow = valor que "avisa" cada vez que cambia
-    val emailSesion: Flow<String?> = context.dataStore.data.map { it[Claves.EMAIL_SESION] }
-    val textoGrande: Flow<Boolean> = context.dataStore.data.map { it[Claves.TEXTO_GRANDE] ?: false }
-    val reducirMovimiento: Flow<Boolean> = context.dataStore.data.map { it[Claves.REDUCIR_MOVIMIENTO] ?: false }
-    val subtitulos: Flow<Boolean> = context.dataStore.data.map { it[Claves.SUBTITULOS] ?: true }
+    val emailSesion: Flow<String?> = almacen.data.map { it[Claves.EMAIL_SESION] }
+    val textoGrande: Flow<Boolean> = almacen.data.map { it[Claves.TEXTO_GRANDE] ?: false }
+    val reducirMovimiento: Flow<Boolean> = almacen.data.map { it[Claves.REDUCIR_MOVIMIENTO] ?: false }
+    val subtitulos: Flow<Boolean> = almacen.data.map { it[Claves.SUBTITULOS] ?: true }
 
     suspend fun guardarSesion(email: String) {
-        context.dataStore.edit { it[Claves.EMAIL_SESION] = email }
+        almacen.edit { it[Claves.EMAIL_SESION] = email }
     }
 
     suspend fun cerrarSesion() {
-        context.dataStore.edit { it.remove(Claves.EMAIL_SESION) }
+        almacen.edit { it.remove(Claves.EMAIL_SESION) }
     }
 
     suspend fun setTextoGrande(valor: Boolean) {
-        context.dataStore.edit { it[Claves.TEXTO_GRANDE] = valor }
+        almacen.edit { it[Claves.TEXTO_GRANDE] = valor }
     }
 
     suspend fun setReducirMovimiento(valor: Boolean) {
-        context.dataStore.edit { it[Claves.REDUCIR_MOVIMIENTO] = valor }
+        almacen.edit { it[Claves.REDUCIR_MOVIMIENTO] = valor }
     }
 
     suspend fun setSubtitulos(valor: Boolean) {
-        context.dataStore.edit { it[Claves.SUBTITULOS] = valor }
+        almacen.edit { it[Claves.SUBTITULOS] = valor }
     }
 }

@@ -29,12 +29,18 @@ import java.io.FileOutputStream
 
 // ─────────────────────────────────────────────────────────────
 // PERFILVIEWMODEL: perfil (Room), preferencias (DataStore) y foto (galería)
+//
+// INYECCIÓN DE DEPENDENCIAS (mismo esquema que RecetaViewModel):
+// los repositorios llegan por el constructor con un valor por defecto.
+// La app usa los reales; las pruebas unitarias entregan mocks de MockK.
+// @JvmOverloads crea también el constructor con solo (Application) que usa viewModel().
 // ─────────────────────────────────────────────────────────────
-class PerfilViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val usuarioRepository =
-        UsuarioRepository(AppDatabase.getDatabase(application).usuarioDao())
-    private val preferencias = PreferenciasRepository(application)
+class PerfilViewModel @JvmOverloads constructor(
+    application: Application,
+    private val usuarioRepository: UsuarioRepository =
+        UsuarioRepository(AppDatabase.getDatabase(application).usuarioDao()),
+    private val preferencias: PreferenciasRepository = PreferenciasRepository(application)
+) : AndroidViewModel(application) {
 
     private val _estado = MutableStateFlow(PerfilUiState())
     val estado: StateFlow<PerfilUiState> = _estado.asStateFlow()
